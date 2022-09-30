@@ -7,11 +7,13 @@ function tokens(number) {
 
 describe("Token contract", function () {
 
-	let token;
+	let token, accounts, deployer;
 
 	beforeEach(async function () {
 		const Token = await ethers.getContractFactory("Token");
 		token = await Token.deploy("My Token", "My Token Symbol", 1000000);   
+		accounts = await ethers.getSigners();
+		deployer = accounts[0];
 	});
 
 	describe("Deployment", function () {
@@ -35,6 +37,10 @@ describe("Token contract", function () {
 
 		it("has the correct total supply", async function () {  
 			expect(await token.totalSupply()).to.equal(totalSupply);
+		});
+
+		it("assigns total supply to deployer", async function () {  
+			expect(await token.balanceOf(deployer.address)).to.equal(totalSupply);
 		});
 
 	});
