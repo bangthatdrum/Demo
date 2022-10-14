@@ -14,6 +14,6 @@ contract Exchange {
 	}	
 
 	function depositToken(address _token, uint256 _amount) public {
-		Token(_token).transferFrom(msg.sender, address(this), _amount)
+		Token(_token).transferFrom(msg.sender, address(this), _amount);
 	}
 }
