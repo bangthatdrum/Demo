@@ -36,4 +36,15 @@ describe("Exchange", function () {
 		});
 	});
 
+	describe("Depositing tokens", function () {    
+
+		beforeEach(async function () {
+		});
+
+		describe("Success", function () {   
+		}
+		describe("Failure", function () {   
+		}
+	});
+
 });
