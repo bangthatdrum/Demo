@@ -23,12 +23,25 @@ contract Token {
 		balanceOf[msg.sender] = totalSupply;
 	}
 
-	function transfer(address _to, uint256 _value) public returns (bool success) {
-		require(_to != address(0));
-		require(balanceOf[msg.sender] >= _value); 
-		balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+	function _transfer(address _from, address _to, uint256 _value) internal returns (bool success) {
+		balanceOf[_from] = balanceOf[_from] - _value;
 		balanceOf[_to] = balanceOf[_to] + _value;
-		emit Transfer(msg.sender, _to, _value);
+		emit Transfer(_from, _to, _value);
+		return true;
+	}
+
+	function transfer(address _to, uint256 _value) public returns (bool success) {		
+		require(balanceOf[msg.sender] >= _value); 
+		require(_to != address(0));
+		_transfer(msg.sender, _to, _value);
+		return true;
+	}
+
+	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+		require(_value <= balanceOf[_from]);
+		require(_value <= allowance[_from][msg.sender]); // caller has approval to take money from _from
+		allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
+		_transfer(_from, _to, _value);
 		return true;
 	}
 
@@ -39,13 +52,4 @@ contract Token {
 		return true;
 	}
 
-	function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
-		require(_value <= balanceOf[_from]);
-		require(_value <= allowance[_from][msg.sender]);
-		allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
-		emit Transfer(_from, _to, _value);
-		return true;
-	}
-
-	
 }

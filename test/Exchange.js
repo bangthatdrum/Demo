@@ -28,7 +28,7 @@ describe("Exchange", function () {
 		exchange = await Exchange.deploy(feeAccount.address, feePercent);
 
 		const Token1 = await ethers.getContractFactory("Token");
-		token1 = await Token1.deploy("My Token 1", "Symbol 1", 1);
+		token1 = await Token1.deploy("Token 1", "Symbol Token 1", 100);
 	});
 
 	describe("Deployment", function () {    
@@ -44,17 +44,18 @@ describe("Exchange", function () {
 		let amount, transaction, result;
 
 		beforeEach(async function () { 
-			transaction = await token.connect(user1).transfer(token1.address, amount);
-			result = await transaction.wait();
+			//amount = toWei(1);  
+			//transaction = await exchange.connect(user1).depositToken(token1.address, amount);
+			//result = await transaction.wait();
 		});
 
 		describe("Success", function () {   
-			it("Track the token deposit", async function () {  
-			});
+		 	it("Tracks the token deposit", async function () {  
+		 	});
 		});
 
-		describe("Failure", function () {   
-		});
+		// describe("Failure", function () {   
+		// });
 
 	});
 

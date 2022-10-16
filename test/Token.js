@@ -134,4 +134,47 @@ describe("Token contract", function () {
 		
 	});
 
+	describe("Delegated Token Transfers", function () {
+
+	let amount, transaction, result;
+
+		beforeEach(async function () {
+			approvedAmount = toWei(1);      
+			actualAmount = toWei(0.5);
+			transaction = await token.connect(deployer).approve(exchange.address, approvedAmount);
+			result = await transaction.wait();
+		});
+
+		describe("Success", function () {
+			beforeEach(async function () {
+				transaction = await token.connect(exchange).transferFrom(deployer.address, receiver.address, actualAmount);
+				result = await transaction.wait();
+			});
+			it("Transfers token balances", async function() {
+				expect(await token.balanceOf(deployer.address)).to.equal(toBigNum(totalSupply*10**decimals-actualAmount));
+				expect(await token.balanceOf(receiver.address)).to.equal(actualAmount);
+			});
+			it("Resets the allowance", async function() {
+				expect(await token.allowance(deployer.address, exchange.address)).to.equal(toBigNum(approvedAmount-actualAmount));
+			});
+			it("Emits a transfer event", async function () {        
+				const events = result.events[0];
+				const args = result.events[0].args;  
+		        expect(events.event).to.equal("Transfer");
+				expect(args.from).to.equal(deployer.address);
+				expect(args.to).to.equal(receiver.address);
+				expect(args.value).to.equal(actualAmount);                    
+			});
+		});	
+
+		describe("Failure", async function () {
+			it("Rejects insufficient balances", async function () { 
+				const invalidAmount = toWei(1.1);   
+				await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.reverted;
+			});
+		});
+
+	});
+
+
 });
