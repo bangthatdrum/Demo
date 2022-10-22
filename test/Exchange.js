@@ -14,24 +14,24 @@ function toBigNum(value) {
 }
 
 describe("Exchange", function () {
-
 	let accounts, deployer, feeAccount, exchange;
 	const feePercent = 10;
-
 	beforeEach(async function () {
+
 		accounts = await ethers.getSigners();
+
 		deployer = accounts[0];
 		feeAccount = accounts[1];
 		user1 = accounts[2];
 
 		const Exchange = await ethers.getContractFactory("Exchange");
 		exchange = await Exchange.deploy(feeAccount.address, feePercent);
-
 		const Token1 = await ethers.getContractFactory("Token");
-		token1 = await Token1.deploy("Token 1", "Symbol Token 1", 100);
-	});
+		token1 = await Token1.deploy("Token 1", "Token 1 Symbol", 2);
 
-	describe("Deployment", function () {    
+		transaction = await token1.connect(deployer).transfer(user1.address, toWei(2));
+	});
+	describe("Deployment", function () {
 		it("Track the fee account address", async function () {  
 			expect(await exchange.feeAccount()).to.equal(feeAccount.address);
 		});
@@ -39,24 +39,42 @@ describe("Exchange", function () {
 			expect(await exchange.feePercent()).to.equal(feePercent);
 		});
 	});
+	describe("Depositing tokens", function () {
+		let actualAmount, approvedAmount, result1, result2;
+			describe("Success", function () {   
+			beforeEach(async function () { 
+				approvedAmount = toWei(2);
+				actualAmount = toWei(1);
+				insufficentAmount = approvedAmount + actualAmount;  
 
-	describe("Depositing tokens", function () {     
-		let amount, transaction, result;
+				// User1 connects to token contract, user1 approves exchange to transfer that amount
+				transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
+				result1 = await transaction.wait();
 
-		beforeEach(async function () { 
-			//amount = toWei(1);  
-			//transaction = await exchange.connect(user1).depositToken(token1.address, amount);
-			//result = await transaction.wait();
+				// User1 connects to exchange contract, exchange transfers that amount from user1 to exchange
+				transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
+				result2 = await transaction.wait();			
+			});
+			it("Tracks the token deposit", async function () {  
+				expect(await token1.balanceOf(exchange.address)).to.equal(actualAmount);
+				expect(await exchange.tokens(token1.address, user1.address)).to.equal(actualAmount);
+				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(actualAmount);
+			});
+			it("Emits a deposit event", async function () {        
+				const events = result2.events[1]; // transferFrom emits an event also
+				const args = result2.events[1].args; 
+				expect(events.event).to.equal("Deposit");
+				expect(args.token).to.equal(token1.address);
+				expect(args.user).to.equal(user1.address);
+				expect(args.amount).to.equal(actualAmount);    
+				expect(args.balance).to.equal(actualAmount);   
+			});
 		});
-
-		describe("Success", function () {   
-		 	it("Tracks the token deposit", async function () {  
-		 	});
+		describe("Failure", function () {   
+			it("Fails when no tokens are approved", async function () { 
+				await expect(exchange.connect(user1).depositToken(token1.address, actualAmount)).to.be.revertedWith('Insufficient allowance');	
+			});
 		});
-
-		// describe("Failure", function () {   
-		// });
 
 	});
-
 });
