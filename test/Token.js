@@ -74,11 +74,10 @@ describe("Token contract", function () {
 		describe("Failure", function () {
 			it("Rejects insufficient balances", async function () {         
 				invalidAmount = toWei(2);       
-				await expect(token.connect(deployer).transfer(receiver.address, invalidAmount)).to.be.reverted;
+				await expect(token.connect(deployer).transfer(receiver.address, invalidAmount)).to.be.revertedWith("Token: Insufficient balance");
 			});
 			it("Rejects invalid recipient", async function () {     
-				amount = toWei(1);      
-				await expect(token.connect(deployer).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.reverted;
+				await expect(token.connect(deployer).transfer('0x0000000000000000000000000000000000000000', amount)).to.be.revertedWith("Token: Invalid recipient address");
 			});
 		});		
 	});
@@ -106,7 +105,7 @@ describe("Token contract", function () {
 		describe("Failure", function () {
 			it("Rejects invalid spenders", async function () {     
 				amount = toWei(1);      
-				await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000', amount)).to.be.reverted;
+				await expect(token.connect(deployer).approve('0x0000000000000000000000000000000000000000', amount)).to.be.revertedWith("Token: Invalid spender");
 			});
 		});		
 	});
@@ -143,7 +142,7 @@ describe("Token contract", function () {
 		describe("Failure", async function () {
 			it("Rejects insufficient balances", async function () { 
 				const invalidAmount = toWei(1.1);   
-				await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.reverted;
+				await expect(token.connect(exchange).transferFrom(deployer.address, receiver.address, invalidAmount)).to.be.revertedWith("Token: Insufficient balance");
 			});
 		});
 	});

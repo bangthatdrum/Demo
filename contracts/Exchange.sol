@@ -31,7 +31,10 @@ contract Exchange {
 		emit Deposit(_token, msg.sender, _amount, tokens[_token][msg.sender]);
 	}
 
-	function withdrawToken(address _token, uint256 _amount) public {
+	function withdrawToken(address _token, uint256 _amount) public { 
+		// Ensure user has sufficient tokens to withdraw
+		require(tokens[_token][msg.sender] >= _amount, "Exchange: Insufficient tokens to withdraw");
+
 		// Transfer from exchange to user (no approval necessary)
 		Token(_token).transfer(msg.sender, _amount);
 
