@@ -16,7 +16,7 @@ function toBigNum(value) {
 describe("Exchange", function () {
 	let accounts, deployer, feeAccount, exchange;
 	const feePercent = 10;
-	const totalSupply = 1;
+	const totalSupply = 1; // Unit of ETH (converts to WEI)
 
 	beforeEach(async function () {
 		accounts = await ethers.getSigners();
@@ -30,13 +30,17 @@ describe("Exchange", function () {
 		const Exchange = await ethers.getContractFactory("Exchange");
 		exchange = await Exchange.deploy(feeAccount.address, feePercent);
 
-		// Deploy token contract
-		const Token1 = await ethers.getContractFactory("Token");
-		token1 = await Token1.deploy("Token 1", "Token 1 Symbol", totalSupply);
+		// Get token contract factory
+		const Token = await ethers.getContractFactory("Token");
+		// Deploy token 1 contract
+		token1 = await Token.deploy("Token 1", "Token 1 Symbol", totalSupply);
+		// Deploy token 2 contract
+		token2 = await Token.deploy("Mock DAI", "mDAI", totalSupply);
 
-		// Transfer some tokens from deployer to user1 
+		// Transfer some tokens from deployer (total supply given) to user1 
 		transaction = await token1.connect(deployer).transfer(user1.address, toWei(1));
 	});
+	
 	describe("Deployment", function () {
 		it("Track the fee account address", async function () {  
 			expect(await exchange.feeAccount()).to.equal(feeAccount.address);
@@ -45,6 +49,7 @@ describe("Exchange", function () {
 			expect(await exchange.feePercent()).to.equal(feePercent);
 		});
 	});
+
 	describe("Depositing tokens", function () {
 		let actualAmount, approvedAmount, result1, result2;
 		describe("Success", function () {   
@@ -81,6 +86,7 @@ describe("Exchange", function () {
 			});
 		});
 	});
+
 	describe("Withdrawing tokens", function () {
 		let amount, result1, result2, result3;
 		describe("Success", function () {   
@@ -125,6 +131,7 @@ describe("Exchange", function () {
 			});
 		});
 	});
+
 	describe("Checking balances", function () {
 		let actualAmount, approvedAmount, result1, result2;		 
 			beforeEach(async function () { 
@@ -144,4 +151,66 @@ describe("Exchange", function () {
 				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(actualAmount);
 			});
 	});
+
+	describe("Making orders", function () {
+		let transaction, result1, result2, result3;	 
+
+		describe("Success", function () {
+
+			beforeEach(async function () { 	
+				approvedAmount = toWei(1);
+				actualAmount = toWei(1);
+
+				// Approve amount
+				transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
+				result1 = await transaction.wait();
+
+				// Deposit amount
+				transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
+				result2 = await transaction.wait();	
+
+				// Make order
+				transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));	
+				result3 = await transaction.wait();		
+			});
+
+			it("Tracks the newly created order", async function () {  
+				expect(await exchange.ordersCount()).to.equal(1);
+			});
+
+			it("Emits an order event", async function () {  
+				const event = result3.events[0];
+				expect(event.event).to.equal('Order');
+
+				const args = event.args;
+				expect(args.id).to.equal(1);
+				expect(args.user).to.equal(user1.address);
+				expect(args.tokenGet).to.equal(token2.address);
+				expect(args.amountGet).to.equal(toWei(1));
+				expect(args.tokenGive).to.equal(token1.address);
+				expect(args.amountGive).to.equal(toWei(1));
+			});
+
+		});
+
+		describe("Failure", function () {
+			it('Rejects with insufficient balance', async () => {
+				approvedAmount = toWei(1);
+				actualAmount = toWei(0.1);
+
+				// Approve amount
+				transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
+				result1 = await transaction.wait();
+
+				// Deposit amount
+				transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
+				result2 = await transaction.wait();	
+
+				// Make order
+				await expect(exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1))).to.be.revertedWith('Exchange: Insufficient tokens on exhange to make order');	;
+			});
+		});
+
+	});
+
 });

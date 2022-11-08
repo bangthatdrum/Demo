@@ -56,5 +56,4 @@ contract Token {
 	function getBalanceOf(address _user) public view returns (uint256) {
 		return balanceOf[_user];
 	}
-
 }
