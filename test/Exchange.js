@@ -21,10 +21,11 @@ describe("Exchange", function () {
 	beforeEach(async function () {
 		accounts = await ethers.getSigners();
 
-		// Total supply is assigned to deployer
+		// Total supply is assigned to deployer of contract
 		deployer = accounts[0];
 		feeAccount = accounts[1];
 		user1 = accounts[2];
+		user2 = accounts[3];
 
 		// Deploy exchange contract
 		const Exchange = await ethers.getContractFactory("Exchange");
@@ -134,9 +135,9 @@ describe("Exchange", function () {
 
 	describe("Checking balances", function () {
 		let actualAmount, approvedAmount, result1, result2;		 
-			beforeEach(async function () { 
-				approvedAmount = toWei(2);
-				actualAmount = toWei(1);
+		beforeEach(async function () { 
+			approvedAmount = toWei(2);
+			actualAmount = toWei(1);
 
 				// Approve: user1 connects to token contract, user1 approves exchange to transfer that amount
 				transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
@@ -146,10 +147,10 @@ describe("Exchange", function () {
 				transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
 				result2 = await transaction.wait();			
 			});
-			it("Returns user balance", async function () {  
-				expect(await token1.balanceOf(exchange.address)).to.equal(actualAmount);
-				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(actualAmount);
-			});
+		it("Returns user balance", async function () {  
+			expect(await token1.balanceOf(exchange.address)).to.equal(actualAmount);
+			expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(actualAmount);
+		});
 	});
 
 	describe("Making orders", function () {
@@ -213,4 +214,57 @@ describe("Exchange", function () {
 
 	});
 
+	describe("Cancelling orders", function () {
+		beforeEach(async function () { 	
+			approvedAmount = toWei(1);
+			actualAmount = toWei(1);
+
+			// Approve amount
+			transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
+			result1 = await transaction.wait();
+
+			// Deposit amount
+			transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
+			result2 = await transaction.wait();	
+
+			// Make order
+			transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));	
+			result3 = await transaction.wait();			
+		});
+		describe("Success", function () {
+			beforeEach(async function () { 	
+				transaction = await exchange.connect(user1).cancelOrder(1);
+				result = await transaction.wait();
+			});
+			it("Updates cancelled orders", async function () {  
+				expect(await exchange.orderCancelled(1)).to.equal(true);
+			});
+			it("Emits a cancel event", async function () {  
+				const event = result.events[0];
+				expect(event.event).to.equal('Cancel');
+
+				const args = event.args;
+				expect(args.id).to.equal(1);
+				expect(args.user).to.equal(user1.address);
+				expect(args.tokenGet).to.equal(token2.address);
+				expect(args.amountGet).to.equal(toWei(1));
+				expect(args.tokenGive).to.equal(token1.address);
+				expect(args.amountGive).to.equal(toWei(1));
+			});
+		});
+		describe("Failure", function () {
+			it("Rejects invalid order IDs", async function () {  
+				const invalidOrderID = 2;
+				await expect(exchange.connect(user1).cancelOrder(invalidOrderID)).to.be.revertedWith('Exchange: Order does not exist');
+				result = await transaction.wait();				
+			});
+			it("Rejects unauthorized cancellations", async function () {  
+				const validOrderID = 1;
+				await expect(exchange.connect(user2).cancelOrder(validOrderID)).to.be.revertedWith('Exchange: Not order owner');
+			});
+		});
+
+	});
+
 });
+
