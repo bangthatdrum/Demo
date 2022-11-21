@@ -15,8 +15,10 @@ function toBigNum(value) {
 
 describe("Exchange", function () {
 	let accounts, deployer, feeAccount, exchange;
+	const startBalanceUser1 = toWei(50);
+	const startBalanceUser2 = toWei(50);
 	const feePercent = 10;
-	const totalSupply = 1; // Unit of ETH (converts to WEI)
+	const totalSupply = 100; // Unit of ETH (converts to WEI)
 
 	beforeEach(async function () {
 		accounts = await ethers.getSigners();
@@ -38,8 +40,11 @@ describe("Exchange", function () {
 		// Deploy token 2 contract
 		token2 = await Token.deploy("Mock DAI", "mDAI", totalSupply);
 
+
 		// Transfer some tokens from deployer (total supply given) to user1 
-		transaction = await token1.connect(deployer).transfer(user1.address, toWei(1));
+		transaction = await token1.connect(deployer).transfer(user1.address, startBalanceUser1);
+		// Transfer some tokens from deployer (total supply given) to user2 
+		transaction = await token2.connect(deployer).transfer(user2.address, startBalanceUser2);
 	});
 	
 	describe("Deployment", function () {
@@ -94,26 +99,26 @@ describe("Exchange", function () {
 			beforeEach(async function () { 
 				amount = toWei(1);
 
-				// Approve: user1 connects to token contract, user1 approves exchange to transfer that amount
+				// Approve (1 token)
 				transaction = await token1.connect(user1).approve(exchange.address, amount);
 				result1 = await transaction.wait();
 
-				// Deposit: user1 connects to exchange contract, exchange transfers that amount from user1 to exchange
+				// Deposit (1 token)
 				transaction = await exchange.connect(user1).depositToken(token1.address, amount);				
 				result2 = await transaction.wait();			
 
-				// Withdraw: user1 connects to exchange contract, exchange transfers that amount to user1
+				// Withdraw (1 token)
 				transaction = await exchange.connect(user1).withdrawToken(token1.address, amount);				
 				result3 = await transaction.wait();			
 			});
 			it("Tracks the token withdrawal", async function () {  
-				// Exchange has zero tokens
-				expect(await token1.balanceOf(exchange.address)).to.equal(amount-amount);
-				// User1 has this many tokens
-				expect(await token1.balanceOf(user1.address)).to.equal(amount);
-				// Exchange ledger has zero tokens belonging to user1 (equivalent results)
-				expect(await exchange.tokens(token1.address, user1.address)).to.equal(amount-amount);
-				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(amount-amount);
+				// Exchange has zero tokens (1 deposit, 1 withdrawl)
+				expect(await token1.balanceOf(exchange.address)).to.equal(toBigNum(amount-amount));
+				// User1 has this many tokens (same as at beginning)
+				expect(await token1.balanceOf(user1.address)).to.equal(startBalanceUser1);
+				// Exchange ledger has zero tokens belonging to user1 (these are equivalent)
+				expect(await exchange.tokens(token1.address, user1.address)).to.equal(toBigNum(amount-amount));
+				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toBigNum(amount-amount));
 			});
 			it("Emits a withdrawal event", async function () {        
 				const events = result3.events[1]; // transferFrom emits an event before this
@@ -265,6 +270,45 @@ describe("Exchange", function () {
 		});
 
 	});
+
+	describe("Filling orders", function () {
+
+		beforeEach(async function () { 	
+	
+			approvedAmount = toWei(1);
+			actualAmount = toWei(1);
+
+			// Approve amount
+			transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
+			result1 = await transaction.wait();
+
+			// Deposit amount
+			transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
+			result2 = await transaction.wait();	
+
+			// Make order
+			transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));	
+			result3 = await transaction.wait();	
+
+			// Approve amount~
+			transaction = await token2.connect(user2).approve(exchange.address, approvedAmount);
+			result1 = await transaction.wait();
+
+			// Deposit amount
+			transaction = await exchange.connect(user2).depositToken(token2.address, actualAmount);				
+			result2 = await transaction.wait();	
+
+			// Fill order
+			transaction = await exchange.connect(user2).fillOrder('1');
+			result1 = await transaction.wait();
+		});
+
+		it("Executes the trade and charges fee", async function () {  
+
+		});	
+
+	});	
+
 
 });
 
