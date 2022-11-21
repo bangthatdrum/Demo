@@ -7,12 +7,17 @@
 	contract Exchange {
 		address public feeAccount;
 		uint256 public feePercent;
-		// Token address then user address
-		mapping(address => mapping(address => uint256)) public tokens; // on exchange
+		// Token address then user address gives tokens on exchange
+		mapping(address => mapping(address => uint256)) public tokens;
 		mapping(uint256 => _Order) public orders;
 		mapping(uint256 => bool) public orderCancelled;
 
 		uint256 public ordersCount;
+
+		constructor(address _feeAccount, uint256 _feePercent) {
+			feeAccount = _feeAccount;
+			feePercent = _feePercent;
+		}	
 
 		struct _Order { 
 			uint256 id;
@@ -44,11 +49,16 @@
 			uint256 amountGive,
 			uint256 timestamp
 		);
-
-		constructor(address _feeAccount, uint256 _feePercent) {
-			feeAccount = _feeAccount;
-			feePercent = _feePercent;
-		}	
+		event Trade (
+			uint256 id,
+			address user,
+			address tokenGet,
+			uint256 amountGet, 
+			address tokenGive, 
+			uint256 amountGive,
+			address creator,
+			uint256 timestamp
+		);
 
 		// ------------------------
 		// DEPOSIT & WITHDRAW TOKEN
@@ -172,7 +182,7 @@
 
 			// Fee is paid by the user who filled the order (msg.sender)
 			// Fee is deducted from _amountGet
-			uint256 _feeAmount = (_amountGet * feePercent) / 100;
+			uint256 _feeAmount = (_amountGet * feePercent/100);	
 
 			// User 1 make order 
 			tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;

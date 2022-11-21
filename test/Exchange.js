@@ -27,7 +27,7 @@ describe("Exchange", function () {
 		deployer = accounts[0];
 		feeAccount = accounts[1];
 		user1 = accounts[2];
-		user2 = accounts[3];
+		user2 = accounts[3]; // msg.sender
 
 		// Deploy exchange contract
 		const Exchange = await ethers.getContractFactory("Exchange");
@@ -275,8 +275,8 @@ describe("Exchange", function () {
 
 		beforeEach(async function () { 	
 	
-			approvedAmount = toWei(1);
-			actualAmount = toWei(1);
+			approvedAmount = toWei(50);
+			actualAmount = toWei(50);
 
 			// Approve amount
 			transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
@@ -286,26 +286,54 @@ describe("Exchange", function () {
 			transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
 			result2 = await transaction.wait();	
 
-			// Make order
+			// Make order (1:1 swap)
 			transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));	
 			result3 = await transaction.wait();	
 
-			// Approve amount~
+			// Approve amount
 			transaction = await token2.connect(user2).approve(exchange.address, approvedAmount);
 			result1 = await transaction.wait();
 
 			// Deposit amount
 			transaction = await exchange.connect(user2).depositToken(token2.address, actualAmount);				
 			result2 = await transaction.wait();	
-
-			// Fill order
-			transaction = await exchange.connect(user2).fillOrder('1');
-			result1 = await transaction.wait();
 		});
 
 		it("Executes the trade and charges fee", async function () {  
-
+			// Token give
+			expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toWei(50)); 
+			expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(toWei(0)); 
+			// Token give
+			expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(toWei(0)); 
+			expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(toWei(50)); 
+			// Fees
+			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));
+			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));   
+			// Fill order
+			transaction = await exchange.connect(user2).fillOrder('1');
+			result1 = await transaction.wait();
+			// Token give
+			expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toWei(49)); 
+			expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(toWei(1)); 
+			// Token give
+			expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(toWei(1)); 
+			expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(toBigNum(toWei(50)-toWei(1)-toWei(0.1))); 
+			// Fees
+			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));
+			expect(await exchange.balanceOf(token2.address, feeAccount.address)).to.equal(toWei(0.1));   
 		});	
+		it("Emits a trade event", async function () {  
+			// const event = result.events[0];
+			// expect(event.event).to.equal('Trade');
+
+			// const args = event.args;
+			// expect(args.id).to.equal(1);
+			// expect(args.user).to.equal(user1.address);
+			// expect(args.tokenGet).to.equal(token2.address);
+			// expect(args.amountGet).to.equal(toWei(1));
+			// expect(args.tokenGive).to.equal(token1.address);
+			// expect(args.amountGive).to.equal(toWei(1));
+		});		
 
 	});	
 
