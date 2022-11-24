@@ -200,7 +200,7 @@ describe("Exchange", function () {
 		});
 
 		describe("Failure", function () {
-			it('Rejects with insufficient balance', async () => {
+			it("Rejects with insufficient balance", async () => {
 				approvedAmount = toWei(1);
 				actualAmount = toWei(0.1);
 
@@ -246,7 +246,7 @@ describe("Exchange", function () {
 			});
 			it("Emits a cancel event", async function () {  
 				const event = result.events[0];
-				expect(event.event).to.equal('Cancel');
+				expect(event.event).to.equal("Cancel");
 
 				const args = event.args;
 				expect(args.id).to.equal(1);
@@ -260,83 +260,94 @@ describe("Exchange", function () {
 		describe("Failure", function () {
 			it("Rejects invalid order IDs", async function () {  
 				const invalidOrderID = 2;
-				await expect(exchange.connect(user1).cancelOrder(invalidOrderID)).to.be.revertedWith('Exchange: Order does not exist');
-				result = await transaction.wait();				
+				await expect(exchange.connect(user1).cancelOrder(invalidOrderID)).to.be.revertedWith("Exchange: Order does not exist");
 			});
 			it("Rejects unauthorized cancellations", async function () {  
 				const validOrderID = 1;
-				await expect(exchange.connect(user2).cancelOrder(validOrderID)).to.be.revertedWith('Exchange: Not order owner');
+				//await exchange.connect(user2).cancelOrder(validOrderID);
+				await expect(exchange.connect(user2).cancelOrder(validOrderID)).to.be.revertedWith("Exchange: Not order owner");
 			});
 		});
-
 	});
 
-	describe("Filling orders", function () {
-
+	describe("Filling orders", function () {	
+		let transaction, result;
 		beforeEach(async function () { 	
-	
 			approvedAmount = toWei(50);
 			actualAmount = toWei(50);
 
 			// Approve amount
 			transaction = await token1.connect(user1).approve(exchange.address, approvedAmount);
-			result1 = await transaction.wait();
+			result = await transaction.wait();
 
 			// Deposit amount
 			transaction = await exchange.connect(user1).depositToken(token1.address, actualAmount);				
-			result2 = await transaction.wait();	
+			result = await transaction.wait();	
 
 			// Make order (1:1 swap)
 			transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));	
-			result3 = await transaction.wait();	
+			result = await transaction.wait();	
 
 			// Approve amount
 			transaction = await token2.connect(user2).approve(exchange.address, approvedAmount);
-			result1 = await transaction.wait();
+			result = await transaction.wait();
 
 			// Deposit amount
 			transaction = await exchange.connect(user2).depositToken(token2.address, actualAmount);				
-			result2 = await transaction.wait();	
-		});
-
-		it("Executes the trade and charges fee", async function () {  
-			// Token give
-			expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toWei(50)); 
-			expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(toWei(0)); 
-			// Token give
-			expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(toWei(0)); 
-			expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(toWei(50)); 
-			// Fees
-			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));
-			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));   
-			// Fill order
-			transaction = await exchange.connect(user2).fillOrder('1');
-			result1 = await transaction.wait();
-			// Token give
-			expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toWei(49)); 
-			expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(toWei(1)); 
-			// Token give
-			expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(toWei(1)); 
-			expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(toBigNum(toWei(50)-toWei(1)-toWei(0.1))); 
-			// Fees
-			expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));
-			expect(await exchange.balanceOf(token2.address, feeAccount.address)).to.equal(toWei(0.1));   
-		});	
-		it("Emits a trade event", async function () {  
-			// const event = result.events[0];
-			// expect(event.event).to.equal('Trade');
-
-			// const args = event.args;
-			// expect(args.id).to.equal(1);
-			// expect(args.user).to.equal(user1.address);
-			// expect(args.tokenGet).to.equal(token2.address);
-			// expect(args.amountGet).to.equal(toWei(1));
-			// expect(args.tokenGive).to.equal(token1.address);
-			// expect(args.amountGive).to.equal(toWei(1));
+			result = await transaction.wait();	
 		});		
+		describe("Success", function () {
+			it("Executes the trade and charges fee", async function () { 
+				// Fill order
+				transaction = await exchange.connect(user2).fillOrder('1');
+				// Token give
+				expect(await exchange.balanceOf(token1.address, user1.address)).to.equal(toWei(49)); 
+				expect(await exchange.balanceOf(token2.address, user1.address)).to.equal(toWei(1)); 
+				// Token get
+				expect(await exchange.balanceOf(token1.address, user2.address)).to.equal(toWei(1)); 
+				expect(await exchange.balanceOf(token2.address, user2.address)).to.equal(toBigNum(toWei(50)-toWei(1)-toWei(0.1))); 
+				// Fees
+				expect(await exchange.balanceOf(token1.address, feeAccount.address)).to.equal(toWei(0));
+				expect(await exchange.balanceOf(token2.address, feeAccount.address)).to.equal(toWei(0.1));   
+			});	
+			it("Updates filled orders", async function () {  
+				transaction = await exchange.connect(user2).fillOrder('1');
+				expect(await exchange.orderFilled(1)).to.equal(true);
+			});
+			it("Emits a trade event", async function () {  
+				transaction = await exchange.connect(user2).fillOrder('1');
+				result = await transaction.wait();
 
+				const event = result.events[0];
+				expect(event.event).to.equal('Trade');
+				const args = event.args;
+
+				expect(args.id).to.equal(1);
+				expect(args.filler).to.equal(user2.address);
+				expect(args.tokenGet).to.equal(token2.address);
+				expect(args.amountGet).to.equal(toWei(1));			
+				expect(args.tokenGive).to.equal(token1.address);
+				expect(args.amountGive).to.equal(toWei(1));
+				expect(args.maker).to.equal(user1.address); 
+				expect(args.timestamp).to.at.least(1);
+			});		
+		});
+		describe("Failure", function () {
+			it("Rejects invalid order IDs", async function () {  
+				const invalidOrderID = 2;
+				await expect(exchange.connect(user2).fillOrder(invalidOrderID)).to.be.revertedWith("Exchange: Invalid order ID");
+			});
+			it("Rejects orders that are filled", async function () {  
+				await exchange.connect(user2).fillOrder(1);
+				const invalidOrderID = 1;
+				await expect(exchange.connect(user2).fillOrder(invalidOrderID)).to.be.revertedWith("Exchange: Order already filled");
+			});
+			it("Rejects orders that are cancelled", async function () {  
+				await exchange.connect(user1).cancelOrder(1);
+				const invalidOrderID = 1;
+				await expect(exchange.connect(user2).fillOrder(invalidOrderID)).to.be.revertedWith("Exchange: Order already cancelled");
+			});
+		});
 	});	
-
-
 });
 

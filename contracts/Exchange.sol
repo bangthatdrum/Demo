@@ -11,6 +11,7 @@
 		mapping(address => mapping(address => uint256)) public tokens;
 		mapping(uint256 => _Order) public orders;
 		mapping(uint256 => bool) public orderCancelled;
+		mapping(uint256 => bool) public orderFilled;
 
 		uint256 public ordersCount;
 
@@ -51,12 +52,12 @@
 		);
 		event Trade (
 			uint256 id,
-			address user,
+			address filler,
 			address tokenGet,
 			uint256 amountGet, 
 			address tokenGive, 
 			uint256 amountGive,
-			address creator,
+			address maker,
 			uint256 timestamp
 		);
 
@@ -102,7 +103,8 @@
 			require(balanceOf(_tokenGive, msg.sender) >= _amountGive, "Exchange: Insufficient tokens on exhange to make order");
 
 			// Instantiate new order
-			ordersCount = ordersCount + 1;
+			ordersCount++;
+
 			orders[ordersCount] = _Order(
 				ordersCount, // id 1, 2, 3, ... 
 				msg.sender,  // user address
@@ -137,7 +139,7 @@
 
 			// Cancel order
 			orderCancelled[_id] = true;
-			
+
 			// Emit event
 			emit Cancel (
 				_order.id,
@@ -154,6 +156,13 @@
 		// EXECUTING ORDERS
 
 		function fillOrder(uint256 _id) public {
+			// 1. Must be valid orderId
+			require(_id > 0 &&_id <= ordersCount, "Exchange: Invalid order ID");
+			// 2. Order can't be filled
+			require(orderFilled[_id] == false, "Exchange: Order already filled");
+			// 3. Order can't be cancelled
+			require(orderCancelled[_id] == false, "Exchange: Order already cancelled");
+
 			// Fetch order
 			_Order storage _order = orders[_id];
 
@@ -167,7 +176,8 @@
 				_order.amountGive
 			);
 
-			// Swapping tokens
+			// Mark order as filled
+			orderFilled[_order.id] = true;
 
 		}
 
@@ -195,6 +205,18 @@
 			// Charge fees
 			tokens[_tokenGet][feeAccount] = tokens[_tokenGet][feeAccount] + _feeAmount;
 
+			// Emit Trade event
+			emit Trade (
+				_orderId, 
+				msg.sender, // fill order
+				_tokenGet, 
+				_amountGet,
+				_tokenGive,
+				_amountGive,
+				_user, // make order
+				block.timestamp
+				);
+			
 		}
 
 	}
