@@ -216,7 +216,6 @@ describe("Exchange", function () {
 				await expect(exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1))).to.be.revertedWith('Exchange: Insufficient tokens on exhange to make order');	;
 			});
 		});
-
 	});
 
 	describe("Cancelling orders", function () {
@@ -270,7 +269,7 @@ describe("Exchange", function () {
 		});
 	});
 
-	describe("Filling orders", function () {	
+	describe("Filling orders", function () {
 		let transaction, result;
 		beforeEach(async function () { 	
 			approvedAmount = toWei(50);

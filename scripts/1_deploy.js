@@ -7,27 +7,32 @@
 const hre = require("hardhat");
 
 async function main() {
-  //const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  //const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  //const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
-
-  //const lockedAmount = hre.ethers.utils.parseEther("1");
-
-  //const Lock = await hre.ethers.getContractFactory("Lock");
-  //const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  //await lock.deployed();
-
-  //console.log(
-  //  `Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  //);
-
+  console.log("Preparing deployment...\n");
   // Fetch contract to deploy
-  const Token = await hre.ethers.getContractFactory("Token");
+  const Token = await ethers.getContractFactory("Token");
+  const Exchange = await ethers.getContractFactory("Exchange");
+
+  // Fetch accounts
+  const accounts = await ethers.getSigners();
+  console.log(`Acounts fetched:\n${accounts[0].address}\n${accounts[1].address}\n`);
+
   // Deploy 
-  const token = await Token.deploy();
-  await token.deployed();
-  console.log(`Token deployed to ${token.address}`);
+  const token1 = await Token.deploy("Token1", "Token1", 1000000);
+  await token1.deployed();
+  console.log(`Token1 deployed to ${token1.address}\n`);
+
+  const token2 = await Token.deploy("Token2", "Token2", 1000000);
+  await token2.deployed();
+  console.log(`Token2 deployed to ${token2.address}\n`);
+
+  const token3 = await Token.deploy("Token3", "Token3", 1000000);
+  await token3.deployed();
+  console.log(`Token3 deployed to ${token3.address}\n`);
+
+  const exchange = await Exchange.deploy(accounts[1].address, 10);
+  await exchange.deployed();
+  console.log(`Exchange deployed to: ${exchange.address}`)
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -94,7 +94,7 @@
 			return tokens[_token][_user];
 		}
 
-		// ------------------------
+		// --------------------
 		// MAKE & CANCEL ORDERS
 
 		function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public
@@ -152,7 +152,7 @@
 			);
 		}
 
-		// ------------------------
+		// ----------------
 		// EXECUTING ORDERS
 
 		function fillOrder(uint256 _id) public {
