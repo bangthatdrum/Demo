@@ -5,7 +5,33 @@ export const provider = (state = {}, action) => {
         ...state,
         connection: action.connection
       }
-      default:
-        return state;
+    case 'NETWORK_LOADED':
+      return {
+        ...state,
+        connection: action.chainId
+      }
+    case 'ACCOUNT_LOADED':
+      return {
+        ...state,
+        connection: action.account
+      }
+
+    default:
+      return state;
+  }
+}
+
+export const tokens = (state = {loaded:false,contract:null}, action) => {
+  switch(action.type) {
+    case 'TOKEN_LOADED':
+      return {
+        ...state,
+        loaded:true,
+        contract:action.token,
+        symbol:action.symbol
+        }
+
+    default:
+      return state;
   }
 }
