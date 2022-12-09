@@ -8,7 +8,8 @@ import {
   loadProvider, 
   loadNetwork, 
   loadAccount,
-  loadToken
+  loadTokens,
+  loadExchange
 } from '../store/interactions';
 
 function App() {
@@ -17,23 +18,23 @@ function App() {
   async function loadBlockchainData() {
     // Connect Ethers to blockchain
     const provider = loadProvider(dispatch);
-    // Get details
+
+    // Fetch network chaidId   
     const chainId = await loadNetwork(provider, dispatch);
-    const account = await loadAccount(dispatch);
     console.log("ChainId: ", chainId);
-    console.log("Account: ", account);
-
-    // const {chainId} = await provider.getNetwork();
-    // console.log("Chain Id: ", config[chainId].token1.address);
     
+    // Fetch current account & balance from Metamask
+    const accountDetails = await loadAccount(provider, dispatch);
+    console.log("Account: ", accountDetails[0]);
+   
     // Token smart contract
-    //const token = new ethers.Contract(config[chainId].token1.address, TOKEN1_ABI, provider)
-    // console.log("Token address: ", token.address);
-    // const symbol = await token.symbol();
-    // console.log("Token symbol: ", symbol);
+    const token1 = config[chainId].token1;
+    const token2 = config[chainId].token2;
+    await loadTokens(provider,[token1.address, token2.address] , dispatch);
     
-    await loadToken(provider,config[chainId].token1.address,dispatch);
-
+    // Load exchange smart contract
+    const exchange = config[chainId].exchange;
+    await loadExchange(provider, exchange.address, dispatch);
   }
 
   useEffect(() => {
