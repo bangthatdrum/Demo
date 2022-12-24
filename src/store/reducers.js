@@ -8,7 +8,7 @@ export const provider = (state = {}, action) => {
     case 'NETWORK_LOADED':
       return {
         ...state,
-        chaidId: action.chainId
+        chainId: action.chainId
       }
     case 'ACCOUNT_LOADED':
       return {
@@ -20,7 +20,6 @@ export const provider = (state = {}, action) => {
         ...state,
         balance: action.balance
       }
-
     default:
       return state;
   }
