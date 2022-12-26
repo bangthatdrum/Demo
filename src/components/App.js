@@ -4,6 +4,7 @@ import {useDispatch} from 'react-redux';
 import config from '../config.json';
 
 import Navbar from './Navbar';
+import Markets from './Markets';
 
 import {
   loadProvider, 
@@ -44,8 +45,8 @@ function App() {
     // await loadTokens(provider,[token1.address, token2.address] , dispatch);
     
     // // Load exchange smart contract
-    // const exchange = config[chainId].exchange;
-    // await loadExchange(provider, exchange.address, dispatch);
+    const exchange = config[chainId].exchange;
+    await loadExchange(provider, exchange.address, dispatch);
   }
 
   useEffect(() => {
@@ -60,7 +61,7 @@ function App() {
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
 
-          {/* Markets */}
+          <Markets />
 
           {/* Balance */}
 

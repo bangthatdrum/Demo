@@ -14,7 +14,7 @@ const Navbar = () => {
   const chainId = useSelector(state => state.provider.chainId)
   const account = useSelector(state => state.provider.account)
   const balance = useSelector(state => state.provider.balance)
-  console.log(chainId)
+  //console.log(chainId)
   const dispatch = useDispatch();
 
   const connectHandler = async () => { 
