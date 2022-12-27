@@ -1,10 +1,11 @@
-import { useSelector, useDispatch} from 'react-redux'
+import { useSelector, useDispatch} from 'react-redux';
 
 import config from '../config.json';
 
 import { loadTokens } from '../store/interactions';
 
 const Markets = () => {
+
   const dispatch = useDispatch();
   const chainId = useSelector(state => state.provider.chainId)
   const provider = useSelector(state => state.provider.connection)

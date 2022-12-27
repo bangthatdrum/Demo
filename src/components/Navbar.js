@@ -1,4 +1,4 @@
-import {ethers} from 'ethers';
+import {ethers} from 'ethers'
 import { useSelector, useDispatch} from 'react-redux'
 import Blockies from 'react-blockies'
 
@@ -7,14 +7,15 @@ import eth from '../assets/eth.svg'
 
 import { loadAccount } from '../store/interactions'
 
-import config from '../config.json';
+import config from '../config.json'
 
 const Navbar = () => {
+
   const provider = useSelector(state => state.provider.connection)
   const chainId = useSelector(state => state.provider.chainId)
   const account = useSelector(state => state.provider.account)
   const balance = useSelector(state => state.provider.balance)
-  //console.log(chainId)
+
   const dispatch = useDispatch();
 
   const connectHandler = async () => { 

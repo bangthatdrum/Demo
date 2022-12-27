@@ -5,13 +5,15 @@ import config from '../config.json';
 
 import Navbar from './Navbar';
 import Markets from './Markets';
+import Balance from './Balance';
 
 import {
   loadProvider, 
   loadNetwork, 
   loadAccount,
   loadTokens,
-  loadExchange
+  loadExchange,
+  subscribeToEvents
 } from '../store/interactions';
 
 function App() {
@@ -23,7 +25,6 @@ function App() {
 
     // Fetch network chaidId (e.g. hardhat: 31337, etc)
     const chainId = await loadNetwork(provider, dispatch);
-    console.log("ChainId: ", chainId);
     
     // Reload page when network change
     window.ethereum.on('chainChanged', () => {
@@ -40,13 +41,17 @@ function App() {
     //console.log("Account: ", accountDetails[0]);
    
     // Token smart contract
-    // const token1 = config[chainId].token1;
-    // const token2 = config[chainId].token2;
-    // await loadTokens(provider,[token1.address, token2.address] , dispatch);
+    const token1 = config[chainId].token1;
+    const token2 = config[chainId].token2;
+    await loadTokens(provider,[token1.address, token2.address] , dispatch);
     
-    // // Load exchange smart contract
-    const exchange = config[chainId].exchange;
-    await loadExchange(provider, exchange.address, dispatch);
+    // Load exchange smart contract
+    const exchangeConfig = config[chainId].exchange;
+    const exchange = await loadExchange(provider, exchangeConfig.address, dispatch);
+  
+    // Listen to events
+    subscribeToEvents(exchange, dispatch);
+
   }
 
   useEffect(() => {
@@ -63,7 +68,7 @@ function App() {
 
           <Markets />
 
-          {/* Balance */}
+          <Balance />
 
           {/* Order */}
 
