@@ -1,18 +1,17 @@
-import { useSelector, useDispatch} from 'react-redux';
+import { useSelector, useDispatch} from 'react-redux'
 
-import config from '../config.json';
+import config from '../config.json'
 
-import { loadTokens } from '../store/interactions';
+import { loadTokens } from '../store/interactions'
 
 const Markets = () => {
-
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
   const chainId = useSelector(state => state.provider.chainId)
   const provider = useSelector(state => state.provider.connection)
 
   const marketHandler = async (event) => {
-    const addresses = (event.target.value).split(',');
-    await loadTokens(provider, addresses, dispatch);
+    const addresses = (event.target.value).split(',')
+    await loadTokens(provider, addresses, dispatch)
   }
 
   return(
@@ -29,11 +28,10 @@ const Markets = () => {
       ) : (
         <div>Not deployed to network</div>
       )}
-
      
       <hr/>
     </div>
   )
 }
 
-export default Markets;
+export default Markets

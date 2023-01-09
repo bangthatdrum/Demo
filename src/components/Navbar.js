@@ -1,7 +1,7 @@
 import {ethers} from 'ethers'
 import { useSelector, useDispatch} from 'react-redux'
-import Blockies from 'react-blockies'
 
+import Blockies from 'react-blockies'
 import logo from '../assets/logo.png'
 import eth from '../assets/eth.svg'
 
@@ -10,16 +10,15 @@ import { loadAccount } from '../store/interactions'
 import config from '../config.json'
 
 const Navbar = () => {
-
   const provider = useSelector(state => state.provider.connection)
   const chainId = useSelector(state => state.provider.chainId)
   const account = useSelector(state => state.provider.account)
   const balance = useSelector(state => state.provider.balance)
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   const connectHandler = async () => { 
-    await loadAccount(provider, dispatch);
+    await loadAccount(provider, dispatch)
   }
 
   const networkHandler = async (event) => { 
@@ -84,4 +83,4 @@ const Navbar = () => {
   )
 }
 
-export default Navbar;
+export default Navbar

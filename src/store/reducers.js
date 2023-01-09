@@ -21,7 +21,7 @@ export const provider = (state = {}, action) => {
         balance: action.balance
       }
     default:
-      return state;
+      return state
   }
 }
 
@@ -58,7 +58,7 @@ export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
         balances: [...state.balances, action.balance]
       }
     default:
-      return state;
+      return state
   }
 }
 
@@ -80,6 +80,10 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         loaded: true,
         contract: action.exchange // No brackets!
       }
+
+      // ------------------------------------------------------------------------------
+      // BALANCE CASES
+
       case 'EXCHANGE_TOKEN1_BALANCE_LOADED':
       return {
         ...state,
@@ -90,6 +94,10 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         ...state,
         balances: [...state.balances, action.balance]
       }
+
+      // ------------------------------------------------------------------------------
+      // TRANSFER CASES (DEPOSIT & WITHDRAWS)
+
       case 'TRANSFER_REQUEST':
       return {
         ...state,
@@ -100,7 +108,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         },
         transferInProgress: true
       }
-      case 'TRANSFER_SUCCESS':
+     case 'TRANSFER_SUCCESS':
       return {
         ...state,
         transaction: {
@@ -124,6 +132,6 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         events: [action.event, ...state.events]
       }
     default:
-      return state;
+      return state
   }
 }
