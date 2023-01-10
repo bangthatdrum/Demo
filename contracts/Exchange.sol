@@ -65,8 +65,9 @@
 		// DEPOSIT & WITHDRAW TOKEN
 
 		function depositToken(address _token, uint256 _amount) public {
-			// Transfer to exchange from user
-			Token(_token).transferFrom(msg.sender, address(this), _amount);
+			// Transfer from user to exchange, 
+			// origin of contract call -> contract instance
+			Token(_token).transferFrom(msg.sender, address(this), _amount); 
 
 			// Update user balance
 			tokens[_token][msg.sender] = tokens[_token][msg.sender] + _amount;
