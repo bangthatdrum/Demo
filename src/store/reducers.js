@@ -1,4 +1,4 @@
-// ---------
+// ---------------------------------------------------------
 // PROVIDER
 
 export const provider = (state = {}, action) => {
@@ -28,7 +28,7 @@ export const provider = (state = {}, action) => {
   }
 }
 
-// -------
+// ---------------------------------------------------------
 // TOKENS
 
 const DEFAULT_TOKENS_STATE = {
@@ -68,7 +68,7 @@ export const tokens = (state = DEFAULT_TOKENS_STATE, action) => {
   }
 }
 
-// ---------
+// ---------------------------------------------------------
 // EXCHANGE
 
 const DEFAULT_EXCHANGE_STATE = {
@@ -76,8 +76,13 @@ const DEFAULT_EXCHANGE_STATE = {
   contract: {},
   balances: {},
   transaction: {
-    isSuccessful: false
+    transactionType: '',
+    isPending: false,
+    isSuccessful: false,
+    isError: false
   },
+  transferInProgress: false,
+  allOrders: [],
   events: []
 }
 
@@ -124,7 +129,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isSuccessful: true
         },
         transferInProgress: false,
-        events: [action.event, ...state.events]
+        events: [...state.events, action.event]
       }
       case 'TRANSFER_FAIL':
       return {
@@ -136,9 +141,46 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isError: true
         },
         transferInProgress: false,
-        events: [action.event, ...state.events]
+        events: [...state.events, action.event]
       }
+
+      // Making new orders 
+
+      case 'NEW_ORDER_REQUEST':
+      return {
+        ...state,
+        transaction: {
+          transactionType: 'New Order',
+          isPending: true,
+          isSuccessful: false
+        },
+      }
+
+      case 'NEW_ORDER_SUCCESS':
+      return {
+        ...state, 
+        transaction: {
+          transactionType: 'New Order',
+          isPending: false,
+          isSuccessful: true
+        },
+        allOrders: [...state.allOrders, action.order],
+        events: [...state.events, action.event]
+      }
+
+      case 'NEW_ORDER_FAIL':
+      return {
+        ...state,
+        transaction: {
+          transactionType: 'New Order',
+          isPending: false,
+          isSuccessful: false,
+          isError: true
+        },
+      }
+
     default:
       return state
   }
 }
+

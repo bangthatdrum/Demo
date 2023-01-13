@@ -78,16 +78,28 @@ async function main() {
   result = await transaction.wait();
   console.log(`Transferred ${toEther(amount)} token2 from ${user1.address} to ${user2.address}\n`);
 
-
-  // // User1 approve token1
+  // // User1 transfer token1 to exchange
+  // amount = toWei(1000);
+  // // Approve
   // transaction = await token1.connect(user1).approve(exchange.address, amount);
   // result = await transaction.wait();
   // console.log(`Approved ${toEther(amount)} token1 from ${user1.address} to exchange`);
-  // // User1 deposit token1 to exchange
+  // // Deposit
   // transaction = await exchange.connect(user1).depositToken(token1.address, amount);
   // result = await transaction.wait();
   // console.log(`Deposited ${toEther(amount)} token1 from ${user1.address} to exchange`);
  
+  //  // User1 transfer token2 to exchange
+  // amount = toWei(1000);
+  // // Approve
+  // transaction = await token2.connect(user1).approve(exchange.address, amount);
+  // result = await transaction.wait();
+  // console.log(`Approved ${toEther(amount)} token2 from ${user1.address} to exchange`);
+  // // Deposit
+  // transaction = await exchange.connect(user1).depositToken(token2.address, amount);
+  // result = await transaction.wait();
+  // console.log(`Deposited ${toEther(amount)} token2 from ${user1.address} to exchange`);
+
   // // User2 approve token2
   // transaction = await token2.connect(user2).approve(exchange.address, amount);
   // result = await transaction.wait();
@@ -98,7 +110,7 @@ async function main() {
   // console.log(`Deposited ${toEther(amount)} token2 from ${user2.address} to exchange\n`);
   
   result = await token1.connect(user1).getBalanceOf(user1.address);
-  console.log(`User1 token1 balance: ${toEther(result)}`);
+  console.log(`User1 token1 balance: ${toEther(result)}\n`);
   result = await token2.connect(user1).getBalanceOf(user1.address);
   console.log(`User1 token2 balance: ${toEther(result)}`);
 
@@ -107,7 +119,16 @@ async function main() {
   result = await token2.connect(user2).getBalanceOf(user2.address);
   console.log(`User2 token2 balance: ${toEther(result)}\n`);
 
+  result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
+  console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
+  result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
+  console.log(`User1 token2 balance on exchange: ${toEther(result)}\n`);
 
+  result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
+  console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
+  result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
+  console.log(`User1 token2 balance on exchange: ${toEther(result)}\n`);
+  
   // result = await  exchange.connect(user1).balanceOf(token1.address, user1.address);
   // console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
   // result = await  exchange.connect(user2).balanceOf(token1.address, user2.address);
