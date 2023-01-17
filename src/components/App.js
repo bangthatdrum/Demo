@@ -7,6 +7,7 @@ import Navbar from './Navbar'
 import Markets from './Markets'
 import Balance from './Balance'
 import Order from './Order'
+import OrderBook from './OrderBook'
 
 import {
   loadProvider, 
@@ -14,6 +15,7 @@ import {
   loadAccount,
   loadTokens,
   loadExchange,
+  loadAllOrders,
   subscribeToEvents
 } from '../store/interactions'
 
@@ -49,6 +51,9 @@ function App() {
   
     // Listen to events
     subscribeToEvents(exchange, dispatch)
+
+    // Fetch all orders
+    loadAllOrders(provider, exchange, dispatch)
   }
 
   useEffect(() => {
@@ -78,7 +83,7 @@ function App() {
 
           {/* Trades */}
 
-          {/* OrderBook */}
+          <OrderBook />
 
         </section>
       </main>

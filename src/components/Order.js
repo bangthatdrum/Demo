@@ -48,7 +48,7 @@ const Order = () => {
   return (
     <div className="component exchange__orders">
       <div className='component__header flex-between'>
-        <h2>New Order</h2>
+        <h2>Exchange</h2>
         <div className='tabs'>
           <button onClick={tabHandler} ref={buyRef} id='buy' className='tab tab--active'>Buy</button>
           <button onClick={tabHandler} ref={sellRef} id='sell' className='tab'>Sell</button>
@@ -58,9 +58,9 @@ const Order = () => {
       {
         isBuy 
         ? 
-        (<label htmlFor="amount">Buy Amount</label>)
+        (<label htmlFor="amount">Token1 Amount</label>)
         :
-        (<label htmlFor="amount">Sell Amount</label>)
+        (<label htmlFor="amount">Token2 Amount</label>)
       }
 
       <form onSubmit={ isBuy ? buyHandler : sellHandler }>
@@ -75,9 +75,9 @@ const Order = () => {
       {
         isBuy 
         ? 
-        (<label htmlFor="price">Buy Price</label>)
+        (<label htmlFor="price">Token2 Amount</label>)
         :
-        (<label htmlFor="price">Sell Price</label>)
+        (<label htmlFor="price">Token1 Amount</label>)
       }
 
         <input 

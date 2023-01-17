@@ -26,7 +26,7 @@ const wait = (seconds) => {
 }
 
 async function main() {
-  console.log("Seeding exchange...\n");
+  console.log("\nSeeding exchange...\n");
 
   // Fetch network
   const { chainId } = await ethers.provider.getNetwork();
@@ -58,47 +58,78 @@ async function main() {
 
   let transaction, result
 
-  result = await token1.connect(user1).getBalanceOf(user1.address);
-  console.log(`User1 token1 balance: ${toEther(result)}`);
-  result = await token2.connect(user1).getBalanceOf(user1.address);
-  console.log(`User1 token2 balance: ${toEther(result)}`);
-
-  result = await token1.connect(user2).getBalanceOf(user2.address);
-  console.log(`User2 token1 balance: ${toEther(result)}`);
-  result = await token2.connect(user2).getBalanceOf(user2.address);
-  console.log(`User2 token2 balance: ${toEther(result)}\n`);
-
   // User1 give token1 to user2
   transaction = await token1.connect(user1).transfer(user2.address, amount);
   result = await transaction.wait();
-  console.log(`Transferred ${toEther(amount)} token1 from ${user1.address} to ${user2.address}\n`);
+  //console.log(`Transferred ${toEther(amount)} token1 from ${user1.address} to ${user2.address}`);
 
   // User1 give token2 to user2
   transaction = await token2.connect(user1).transfer(user2.address, amount);
   result = await transaction.wait();
-  console.log(`Transferred ${toEther(amount)} token2 from ${user1.address} to ${user2.address}\n`);
+  //console.log(`Transferred ${toEther(amount)} token2 from ${user1.address} to ${user2.address}\n`);
 
-  // // User1 transfer token1 to exchange
-  // amount = toWei(1000);
-  // // Approve
-  // transaction = await token1.connect(user1).approve(exchange.address, amount);
-  // result = await transaction.wait();
-  // console.log(`Approved ${toEther(amount)} token1 from ${user1.address} to exchange`);
-  // // Deposit
-  // transaction = await exchange.connect(user1).depositToken(token1.address, amount);
-  // result = await transaction.wait();
-  // console.log(`Deposited ${toEther(amount)} token1 from ${user1.address} to exchange`);
+  result = await token1.connect(user1).getBalanceOf(user1.address);
+  console.log(`Initial token1 balance user1: ${toEther(result)}`);
+  result = await token2.connect(user1).getBalanceOf(user1.address);
+  console.log(`Initial token2 balance user1: ${toEther(result)}`);
+  result = await token1.connect(user2).getBalanceOf(user2.address);
+  console.log(`Initial token1 balance user2: ${toEther(result)}`);
+  result = await token2.connect(user2).getBalanceOf(user2.address);
+  console.log(`Initial token2 balance user2: ${toEther(result)}\n`);
+
+  // result = await token1.connect(user1).getBalanceOf(user1.address);
+  // console.log(`User1 token1 balance: ${toEther(result)}`);
+  // result = await token2.connect(user1).getBalanceOf(user1.address);
+  // console.log(`User1 token2 balance: ${toEther(result)}`);
+
+  // result = await token1.connect(user2).getBalanceOf(user2.address);
+  // console.log(`User2 token1 balance: ${toEther(result)}`);
+  // result = await token2.connect(user2).getBalanceOf(user2.address);
+  // console.log(`User2 token2 balance: ${toEther(result)}\n`);
+
+  // User1 transfer token1 to exchange
+  amount = toWei(10000);
+  // Approve
+  transaction = await token1.connect(user1).approve(exchange.address, amount);
+  result = await transaction.wait();
+  console.log(`Approved ${toEther(amount)} token1 from user1 to exchange`);
+  // Deposit
+  transaction = await exchange.connect(user1).depositToken(token1.address, amount);
+  result = await transaction.wait();
+  console.log(`Deposited ${toEther(amount)} token1 from user1 to exchange`);
+
+  // User1 transfer token2 to exchange
+  amount = toWei(10000);
+  // Approve
+  transaction = await token2.connect(user1).approve(exchange.address, amount);
+  result = await transaction.wait();
+  console.log(`Approved ${toEther(amount)} token2 from user1 to exchange`);
+  // Deposit
+  transaction = await exchange.connect(user1).depositToken(token2.address, amount);
+  result = await transaction.wait();
+  console.log(`Deposited ${toEther(amount)} token2 from user1 to exchange`);
+
+ // User2 transfer token1 to exchange
+  amount = toWei(10000);
+  // Approve
+  transaction = await token1.connect(user2).approve(exchange.address, amount);
+  result = await transaction.wait();
+  console.log(`Approved ${toEther(amount)} token1 from user2 to exchange`);
+  // Deposit
+  transaction = await exchange.connect(user2).depositToken(token1.address, amount);
+  result = await transaction.wait();
+  console.log(`Deposited ${toEther(amount)} token1 from user2 to exchange`);
  
-  //  // User1 transfer token2 to exchange
-  // amount = toWei(1000);
-  // // Approve
-  // transaction = await token2.connect(user1).approve(exchange.address, amount);
-  // result = await transaction.wait();
-  // console.log(`Approved ${toEther(amount)} token2 from ${user1.address} to exchange`);
-  // // Deposit
-  // transaction = await exchange.connect(user1).depositToken(token2.address, amount);
-  // result = await transaction.wait();
-  // console.log(`Deposited ${toEther(amount)} token2 from ${user1.address} to exchange`);
+  // User2 transfer token2 to exchange
+  amount = toWei(10000);
+  // Approve
+  transaction = await token2.connect(user2).approve(exchange.address, amount);
+  result = await transaction.wait();
+  console.log(`Approved ${toEther(amount)} token2 from user2 to exchange`);
+  // Deposit
+  transaction = await exchange.connect(user2).depositToken(token2.address, amount);
+  result = await transaction.wait();
+  console.log(`Deposited ${toEther(amount)} token2 from user2 to exchange\n`);
 
   // // User2 approve token2
   // transaction = await token2.connect(user2).approve(exchange.address, amount);
@@ -109,25 +140,24 @@ async function main() {
   // result = await transaction.wait();
   // console.log(`Deposited ${toEther(amount)} token2 from ${user2.address} to exchange\n`);
   
+  result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
+  console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
+  result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
+  console.log(`User1 token2 balance on exchange: ${toEther(result)}`);
+
+  result = await exchange.connect(user2).balanceOf(token1.address, user1.address);
+  console.log(`User2 token1 balance on exchange: ${toEther(result)}`);
+  result = await exchange.connect(user2).balanceOf(token2.address, user1.address);
+  console.log(`User2 token2 balance on exchange: ${toEther(result)}\n`);
+
   result = await token1.connect(user1).getBalanceOf(user1.address);
-  console.log(`User1 token1 balance: ${toEther(result)}\n`);
+  console.log(`User1 token1 balance: ${toEther(result)}`);
   result = await token2.connect(user1).getBalanceOf(user1.address);
   console.log(`User1 token2 balance: ${toEther(result)}`);
-
   result = await token1.connect(user2).getBalanceOf(user2.address);
   console.log(`User2 token1 balance: ${toEther(result)}`);
   result = await token2.connect(user2).getBalanceOf(user2.address);
   console.log(`User2 token2 balance: ${toEther(result)}\n`);
-
-  result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
-  console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
-  result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
-  console.log(`User1 token2 balance on exchange: ${toEther(result)}\n`);
-
-  result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
-  console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
-  result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
-  console.log(`User1 token2 balance on exchange: ${toEther(result)}\n`);
   
   // result = await  exchange.connect(user1).balanceOf(token1.address, user1.address);
   // console.log(`User1 token1 balance on exchange: ${toEther(result)}`);
@@ -142,19 +172,32 @@ async function main() {
 
   //--------------------------
   // SEED CANCELLED ORDERS
-  /*
+  
   console.log("Seeding cancelled orders...\n");
 
   // User1 makes order (get, give)
   transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));
   result = await transaction.wait();
-  console.log(`Make order by: ${user1.address}`);
+  //console.log(`Make order by: ${user1.address}`);
 
   // User1 cancels order  
   orderID = result.events[0].args.id;
   transaction = await exchange.connect(user1).cancelOrder(orderID);
   result = await transaction.wait();
-  console.log(`Cancelled order by: ${user1.address}\n`);
+  console.log(`Order ${orderID} cancelled by user1`);
+
+  await wait(1);
+
+  // User1 makes order (get, give)
+  transaction = await exchange.connect(user2).makeOrder(token2.address, toWei(1), token1.address, toWei(1));
+  result = await transaction.wait();
+  //console.log(`Make order by: ${user1.address}`);
+
+  // User1 cancels order  
+  orderID = result.events[0].args.id;
+  transaction = await exchange.connect(user2).cancelOrder(orderID);
+  result = await transaction.wait();
+  console.log(`Order ${orderID} cancelled by user2\n`);
 
   await wait(1);
 
@@ -166,61 +209,68 @@ async function main() {
   // User1 makes order (get, give)
   transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(1), token1.address, toWei(1));
   result = await transaction.wait();
-  console.log(`Make order by: ${user1.address}`);
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user1`);
 
   // User2 fills order
-  orderID = result.events[0].args.id; 
   transaction = await exchange.connect(user2).fillOrder(orderID);
   result = await transaction.wait();
-  console.log(`Filler order by: ${user2.address}`);
-
+  console.log(`Order ${orderID} filled by user2`);
+  /*
   await wait(1);
 
   // User1 makes order (get, give)
   transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(50), token1.address, toWei(15));
-  result = await transaction.wait();
-  console.log(`Make order by: ${user1.address}`);
+  result = await transaction.wait(); 
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user1`);
 
   // User2 fills order
-  orderID = result.events[0].args.id; 
+ 
   transaction = await exchange.connect(user2).fillOrder(orderID);
   result = await transaction.wait();
-  console.log(`Filler order by: ${user2.address}`);
+  console.log(`Order ${orderID} filled by user2`);
 
   await wait(1);
 
   // User1 makes order (get, give)
-  transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(20), token1.address, toWei(2));
+  transaction = await exchange.connect(user2).makeOrder(token1.address, toWei(20), token2.address, toWei(2));
   result = await transaction.wait();
-  console.log(`Make order by: ${user1.address}`);
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user2`);
 
   // User2 fills order
   orderID = result.events[0].args.id; 
-  transaction = await exchange.connect(user2).fillOrder(orderID);
+  transaction = await exchange.connect(user1).fillOrder(orderID);
   result = await transaction.wait();
-  console.log(`Filler order by: ${user2.address}\n`);
+  console.log(`Order ${orderID} filled by user1\n`);
 
   await wait(1);
-
+  */
   //---------------------
   // SEED OPEN ORDERS
+
+  console.log("Seeding open orders...\n");
   
   // User1 makes 10 orders
   for(let i = 1; i<=10; i++){
     transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(10 * i), token1.address, toWei(10));
     result = await transaction.wait();
-    console.log(`Make order by: ${user1.address}`);
+    orderID = result.events[0].args.id;  
+    console.log(`Make order ${orderID} by: ${user1.address}`);
   }
 
   await wait(1);
 
-  // User2 makes 10 orders
+  // User2 makes 10 orders 
+  //function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public
   for(let i = 1; i<=10; i++){
-    transaction = await exchange.connect(user2).makeOrder(token1.address, toWei(10), token2.address, toWei(10 * i));
+    transaction = await exchange.connect(user2).makeOrder(token1.address, toWei(10 * i), token2.address, toWei(10));
     result = await transaction.wait();
-    console.log(`Make order by: ${user2.address}`);
+    orderID = result.events[0].args.id;  
+    console.log(`Make order ${orderID} by: ${user2.address}`);
   }
-*/
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
