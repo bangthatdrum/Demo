@@ -216,7 +216,43 @@ async function main() {
   transaction = await exchange.connect(user2).fillOrder(orderID);
   result = await transaction.wait();
   console.log(`Order ${orderID} filled by user2`);
-  /*
+
+  // User1 makes order (get, give)
+  transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(2), token1.address, toWei(1));
+  result = await transaction.wait();
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user1`);
+
+  // User2 fills order
+  transaction = await exchange.connect(user2).fillOrder(orderID);
+  result = await transaction.wait();
+  console.log(`Order ${orderID} filled by user2`);
+
+  await wait(60);
+
+  // User1 makes order (get, give)
+  transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(3), token1.address, toWei(1));
+  result = await transaction.wait();
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user1`);
+
+  // User2 fills order
+  transaction = await exchange.connect(user2).fillOrder(orderID);
+  result = await transaction.wait();
+  console.log(`Order ${orderID} filled by user2`);
+
+  // User1 makes order (get, give)
+  transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(4), token1.address, toWei(1));
+  result = await transaction.wait();
+  orderID = result.events[0].args.id; 
+  console.log(`Order ${orderID} made by user1`);
+
+  // User2 fills order
+  transaction = await exchange.connect(user2).fillOrder(orderID);
+  result = await transaction.wait();
+  console.log(`Order ${orderID} filled by user2\n`);
+
+   /*
   await wait(1);
 
   // User1 makes order (get, give)
