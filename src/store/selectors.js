@@ -6,7 +6,9 @@ import { ethers } from "ethers";
 const GREEN = "#25CE8F";
 const RED = "#F45353";
 
+const account = (state) => get(state, "provider.account");
 const tokens = (state) => get(state, "tokens.contracts");
+
 const allOrders = (state) => get(state, "exchange.allOrders.data", []); // If not there, return empty array
 const cancelledOrders = (state) =>
   get(state, "exchange.cancelledOrders.data", []);
@@ -29,6 +31,57 @@ const openOrders = (state) => {
   });
 
   return openOrders;
+};
+
+// ------------------------------------------------------------------------------
+// MY OPEN ORDERS
+
+export const myOpenOrdersSelector = createSelector(
+  account,
+  tokens,
+  openOrders,
+  (account, tokens, orders) => {
+    if (!tokens[0] || !tokens[1]) {
+      return;
+    }
+
+    // Get account
+    orders = orders.filter((o) => o.user === account);
+
+    // Get orders for token1 and token2
+    orders = orders.filter(
+      (o) =>
+        o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address
+    );
+    orders = orders.filter(
+      (o) =>
+        o.tokenGive === tokens[1].address || o.tokenGive === tokens[0].address
+    );
+
+    orders = decorateMyOpenOrders(orders, tokens);
+
+    // Sort order by time descending for UI
+    orders = orders.sort((a, b) => b.timestamp - a.timestamp);
+
+    return orders;
+  }
+);
+
+const decorateMyOpenOrders = (orders, tokens) => {
+  return orders.map((order) => {
+    order = decorateOrder(order, tokens);
+    order = decorateMyOpenOrder(order, tokens);
+    return order;
+  });
+};
+
+const decorateMyOpenOrder = (order, tokens) => {
+  let orderType = order.tokenGive === tokens[1].address ? "buy" : "sell";
+  return {
+    ...order,
+    orderType,
+    orderTypeClass: orderType === "buy" ? GREEN : RED,
+  };
 };
 
 const decorateOrder = (order, tokens) => {
@@ -98,7 +151,7 @@ export const filledOrdersSelector = createSelector(
 
     // Apply order colors
     orders = decorateFilledOrders(orders, tokens);
-    console.log(orders);
+    //console.log(orders);
 
     // Sort order by time descending for UI
     orders = orders.sort((a, b) => b.timestamp - a.timestamp);

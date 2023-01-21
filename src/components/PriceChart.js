@@ -36,9 +36,7 @@ const PriceChart = () => {
 
       {/* Price chart goes here */}
 
-      {!account ? (
-        <Banner text={"Please connect with metamask"} />
-      ) : (
+      {account && priceChart ? (
         <Chart
           type="candlestick"
           options={options}
@@ -46,6 +44,8 @@ const PriceChart = () => {
           width="100%"
           height="100%"
         />
+      ) : (
+        <Banner text={"Please connect with metamask"} />
       )}
     </div>
   );
