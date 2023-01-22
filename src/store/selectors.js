@@ -34,6 +34,63 @@ const openOrders = (state) => {
 };
 
 // ------------------------------------------------------------------------------
+// MY FILLED ORDERS
+
+export const myFilledOrdersSelector = createSelector(
+  account,
+  tokens,
+  filledOrders,
+  (account, tokens, orders) => {
+    if (!tokens[0] || !tokens[1]) {
+      return;
+    }
+
+    // Find orders relevant to user
+    orders = orders.filter((o) => o.maker === account || o.filler === account);
+    // Filter orders for current trading pair
+    orders = orders.filter(
+      (o) =>
+        o.tokenGet === tokens[0].address || o.tokenGet === tokens[1].address
+    );
+    orders = orders.filter(
+      (o) =>
+        o.tokenGive === tokens[0].address || o.tokenGive === tokens[1].address
+    );
+    // Sort date descending
+    orders = orders.sort((a, b) => b.timestamp - a.timestamp);
+    // Decorate orders
+    orders = decorateMyFilledOrders(orders, account, tokens);
+
+    return orders;
+  }
+);
+
+const decorateMyFilledOrders = (orders, account, tokens) => {
+  return orders.map((order) => {
+    order = decorateOrder(order, tokens);
+    order = decorateMyFilledOrder(order, account, tokens);
+    return order;
+  });
+};
+
+const decorateMyFilledOrder = (order, account, tokens) => {
+  const myOrder = order.maker === account;
+  let orderType;
+  if (myOrder) {
+    orderType = order.tokenGet === tokens[1].address ? "buy" : "sell";
+  } else {
+    orderType = order.tokenGet === tokens[0].address ? "sell" : "buy";
+  }
+  return {
+    ...order,
+    orderType,
+    orderClass: orderType === "buy" ? GREEN : RED,
+    orderSign: orderType === "buy" ? "+" : "-",
+  };
+  return order;
+};
+
+// ------------------------------------------------------------------------------
 // MY OPEN ORDERS
 
 export const myOpenOrdersSelector = createSelector(
@@ -108,9 +165,7 @@ const decorateOrder = (order, tokens) => {
     token0Amount: ethers.utils.formatUnits(token0Amount, "ether"),
     token1Amount: ethers.utils.formatUnits(token1Amount, "ether"),
     tokenPrice,
-    formattedTimestamp: moment
-      .unix(order.timestamp)
-      .format("h:mm:ss a - d MMM D"),
+    formattedTimestamp: moment.unix(order.timestamp).format("h:mm:ssa MMM D"),
   };
 };
 
