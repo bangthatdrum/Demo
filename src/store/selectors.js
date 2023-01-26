@@ -77,9 +77,9 @@ const decorateMyFilledOrder = (order, account, tokens) => {
   const myOrder = order.maker === account;
   let orderType;
   if (myOrder) {
-    orderType = order.tokenGet === tokens[1].address ? "buy" : "sell";
+    orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
   } else {
-    orderType = order.tokenGet === tokens[0].address ? "sell" : "buy";
+    orderType = order.tokenGet === tokens[0].address ? "buy" : "sell";
   }
   return {
     ...order,
@@ -169,17 +169,6 @@ const decorateOrder = (order, tokens) => {
   };
 };
 
-const decorateOrderBookOrder = (order, tokens) => {
-  const orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
-
-  return {
-    ...order,
-    orderType,
-    orderTypeClass: orderType === "buy" ? GREEN : RED,
-    orderFillAction: orderType === "buy" ? "sell" : "buy",
-  };
-};
-
 // ------------------------------------------------------------------------------
 // ALL FILLED ORDERS
 
@@ -202,7 +191,7 @@ export const filledOrdersSelector = createSelector(
     );
 
     // Sort order by time ascending
-    orders = orders.sort((a, b) => a.timestamp - b.timestamp);
+    //orders = orders.sort((a, b) => b.timestamp - a.timestamp);
 
     // Apply order colors
     orders = decorateFilledOrders(orders, tokens);
@@ -294,6 +283,17 @@ export const orderBookSelector = createSelector(
     return orders;
   }
 );
+
+const decorateOrderBookOrder = (order, tokens) => {
+  const orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
+
+  return {
+    ...order,
+    orderType,
+    orderTypeClass: orderType === "buy" ? GREEN : RED,
+    orderFillAction: orderType === "buy" ? "sell" : "buy",
+  };
+};
 
 // ------------------------------------------------------------------------------
 // PRICE CHART

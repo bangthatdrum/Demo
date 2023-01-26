@@ -286,25 +286,25 @@ async function main() {
   //---------------------
   // SEED OPEN ORDERS
 
-  console.log("Seeding open orders...\n");
+  // console.log("Seeding open orders...\n");
   
   // User1 makes 10 sell orders
   for(let i = 1; i<=10; i++){
-    transaction = await exchange.connect(user1).makeOrder(token2.address, toWei(10 * i), token1.address, toWei(10));
+    transaction = await exchange.connect(user2).makeOrder(token2.address, toWei(10 * i), token1.address, toWei(10));
     result = await transaction.wait();
     orderID = result.events[0].args.id;  
-    console.log(`Make order ${orderID} by: ${user1.address}`);
+    console.log(`Make order ${orderID} by user2`);
   }
 
-  await wait(1);
+  // await wait(1);
 
-  // User1 makes 10 buy orders 
+  // User2 makes 10 buy orders 
   //function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public
   for(let i = 1; i<=10; i++){
-    transaction = await exchange.connect(user1).makeOrder(token1.address, toWei(10 * i), token2.address, toWei(10));
+    transaction = await exchange.connect(user2).makeOrder(token1.address, toWei(10 * i), token2.address, toWei(10));
     result = await transaction.wait();
     orderID = result.events[0].args.id;  
-    console.log(`Make order ${orderID} by: ${user2.address}`);
+    console.log(`Make order ${orderID} by user2`);
   }
 
 }

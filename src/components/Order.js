@@ -75,9 +75,9 @@ const Order = () => {
       {
         isBuy 
         ? 
-        (<label htmlFor="price">Token2 Amount</label>)
+        (<label htmlFor="price">Price per token</label>)
         :
-        (<label htmlFor="price">Token1 Amount</label>)
+        (<label htmlFor="price">Price per token</label>)
       }
 
         <input 

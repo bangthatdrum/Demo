@@ -136,6 +136,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
     // ------------------------------------------------------------------------------
     // CANCELLING ORDERS
+
     case "ORDER_CANCEL_REQUEST":
       return {
         ...state,
@@ -171,7 +172,54 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
       };
 
     // ------------------------------------------------------------------------------
+    // FILLING ORDERS
+
+    case "ORDER_FILL_REQUEST":
+      return {
+        ...state,
+        transaction: {
+          transactionType: "Fill order",
+          isPending: true,
+          isSuccessful: false,
+        },
+      };
+    case "ORDER_FILL_SUCCESS":
+      // Prevent duplicate orders
+      index = state.filledOrders.data.findIndex(
+        (order) => order.id.toString() === action.order.id.toString()
+      );
+      if (index === -1) {
+        data = [...state.filledOrders.data, action.order];
+      } else {
+        data = state.filledOrders.data;
+      }
+      return {
+        ...state,
+        transaction: {
+          transactionType: "Fill order",
+          isPending: false,
+          isSuccessful: true,
+        },
+        filledOrders: {
+          ...state.filledOrders.data,
+          data,
+        },
+        events: [...state.events, action.event],
+      };
+    case "ORDER_FILL_FAIL":
+      return {
+        ...state,
+        transaction: {
+          transactionType: "Fill order",
+          isPending: false,
+          isSuccessful: false,
+          isError: true,
+        },
+      };
+
+    // ------------------------------------------------------------------------------
     // BALANCE CASES
+
     case "EXCHANGE_TOKEN1_BALANCE_LOADED":
       return {
         ...state,
@@ -185,6 +233,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
 
     // ------------------------------------------------------------------------------
     // TRANSFER CASES (DEPOSIT & WITHDRAWS)
+
     case "TRANSFER_REQUEST":
       return {
         ...state,

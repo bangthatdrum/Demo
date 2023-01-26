@@ -49,6 +49,25 @@ export async function loadExchange(provider, address, dispatch) {
 
 export const subscribeToEvents = (exchange, dispatch) => {
     exchange.on(
+        "Trade",
+        (
+            id,
+            user,
+            tokenGet,
+            amountGet,
+            tokenGive,
+            amountGive,
+            creator,
+            timestamp,
+            event
+        ) => {
+            const order = event.args;
+            dispatch({ type: "ORDER_FILL_SUCCESS", order, event });
+            console.log("Dispatch: order filled successfully");
+        }
+    );
+
+    exchange.on(
         "Cancel",
         (
             id,
@@ -269,9 +288,24 @@ export const cancelOrder = async (provider, exchange, order, dispatch) => {
             .cancelOrder(order.id);
         await transaction.wait();
     } catch (error) {
-        console.log(
-            "Dispatch: cancel order fail"
-        );
+        console.log("Dispatch: cancel order fail");
         dispatch({ type: "ORDER_CANCEL_FAIL" });
+    }
+};
+
+// ------------------------------------------------------------------------------
+// FILL ORDER
+
+export const fillOrder = async (provider, exchange, order, dispatch) => {
+    console.log("Dispatch: fill order request");
+    dispatch({ type: "ORDER_FILL_REQUEST" });
+
+    try {
+        const signer = await provider.getSigner();
+        const transaction = await exchange.connect(signer).fillOrder(order.id);
+        await transaction.wait();
+    } catch (error) {
+        console.log("Dispatch: cancel order fail");
+        dispatch({ type: "ORDER_FILL_FAIL" });
     }
 };
