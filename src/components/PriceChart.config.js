@@ -50,6 +50,7 @@ export const options = {
     type: 'datetime',
     labels: {
       show: true,
+      datetimeUTC: false,
       style: {
         colors: '#767F92',
         fontSize: '14px',

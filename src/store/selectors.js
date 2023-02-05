@@ -381,7 +381,6 @@ const buildGraphData = (orders) => {
 
   // Iterate over each time window
   const graphData = hours.map((hour) => {
-    console.log(hour)
     // Get order for each size of time window
     const group = orders[hour];
     // Get open, high, low, close
