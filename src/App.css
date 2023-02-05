@@ -1,14 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
 :root {
-	--clr-primary: #0D121D;
-	--clr-secondary: #121A29;
-	--clr-neutral: #767F92;
+	--clr-primary: #0d121d;
+	--clr-secondary: #121a29;
+	--clr-neutral: #767f92;
 
-	--clr-white: #F1F2F9;
-	--clr-blue: #2187D0;
-	--clr-red: #F45353;
-	--clr-green: #25CE8F;
+	--clr-white: #f1f2f9;
+	--clr-blue: #2187d0;
+	--clr-red: #f45353;
+	--clr-green: #25ce8f;
 }
 
 * {
@@ -44,7 +44,7 @@ h2 {
 	margin: 0.375em 0;
 
 	font-weight: 500;
-	font-size: clamp(0.95rem, 2vw, 1.10rem);
+	font-size: clamp(0.95rem, 2vw, 1.1rem);
 }
 
 p,
@@ -130,7 +130,7 @@ small {
 }
 
 .exchange__header small {
-	margin: 0 0.50em 0 0;
+	margin: 0 0.5em 0 0;
 }
 
 .exchange__header select,
@@ -198,7 +198,7 @@ small {
 	justify-content: center;
 	align-items: center;
 
-	background: #222D41;
+	background: #222d41;
 	border: none;
 	color: var(--clr-white);
 
@@ -267,7 +267,7 @@ small {
 
 .exchange__transfers img {
 	float: left;
-	margin: 0 0.30em 0 0;
+	margin: 0 0.3em 0 0;
 }
 
 .exchange__transfers--form .flex-between {
@@ -354,6 +354,20 @@ small {
 
 	grid-column-start: 1;
 	grid-column-end: 13;
+
+	height: 430px;
+	overflow-y: scroll;
+	scrollbar-width: thin;
+}
+
+.exchange__orderbook::-webkit-scrollbar {
+	background: var(--clr-blue);
+	width: 4px;
+}
+
+.exchange__orderbook::-webkit-scrollbar-thumb {
+	background: var(--clr-white);
+	border-radius: 15px;
 }
 
 .exchange__orderbook--sell tbody tr:hover,
@@ -372,14 +386,14 @@ small {
 }
 
 .identicon {
-	margin: 0 0 0 0.60em;
+	margin: 0 0 0 0.6em;
 }
 
 /* ------------------------------------------------------ */
 /* Misc */
 
 hr {
-	background: #2E3950;
+	background: #2e3950;
 
 	width: 100%;
 	height: 1px;
@@ -390,7 +404,7 @@ hr {
 
 .hr--vertical {
 	flex: 1;
-	background: #2E3950;
+	background: #2e3950;
 
 	margin: 0 auto;
 	width: 1px;
@@ -439,9 +453,9 @@ hr {
 }
 
 .button span::after {
-	content: '';
+	content: "";
 
-	background-image: url('./assets/right-arrow-blue.svg');
+	background-image: url("./assets/right-arrow-blue.svg");
 	background-size: contain;
 	background-repeat: no-repeat;
 
@@ -463,7 +477,7 @@ hr {
 }
 
 .button:hover span::after {
-	background-image: url('./assets/right-arrow-white.svg');
+	background-image: url("./assets/right-arrow-white.svg");
 	right: -18px;
 }
 
@@ -474,7 +488,7 @@ hr {
 }
 
 .button--filled span::after {
-	background-image: url('./assets/right-arrow-white.svg');
+	background-image: url("./assets/right-arrow-white.svg");
 }
 
 .button--filled:hover {
@@ -512,7 +526,7 @@ input::placeholder {
 .tabs {
 	background: var(--clr-primary);
 	border-radius: 10px;
-	padding: 0.20em;
+	padding: 0.2em;
 }
 
 .tab {
@@ -521,7 +535,7 @@ input::placeholder {
 
 	min-width: 6em;
 
-	padding: 0.50em 0.75em;
+	padding: 0.5em 0.75em;
 
 	border: none;
 	border-radius: 8px;
@@ -550,13 +564,13 @@ table {
 
 table caption {
 	text-align: left;
-	margin: 0 0 0.50em;
+	margin: 0 0 0.5em;
 }
 
 table th {
 	color: var(--clr-neutral);
 
-	margin: 0.50em 0;
+	margin: 0.5em 0;
 
 	font-size: 0.85em;
 	font-weight: 500;
@@ -578,7 +592,7 @@ table td {
 
 	margin: 0.25em 0;
 
-	font-size: clamp(0.90rem, 2vw, 0.95rem);
+	font-size: clamp(0.9rem, 2vw, 0.95rem);
 	font-weight: 400;
 	text-align: right;
 }
@@ -587,14 +601,14 @@ table td {
 /* -- Alert -- */
 
 .alert {
-	background: #222D41;
+	background: #222d41;
 
 	height: 100px;
 	width: 300px;
 
 	position: fixed;
-	bottom: 1.50em;
-	right: 1.50em;
+	bottom: 1.5em;
+	right: 1.5em;
 	z-index: 1;
 
 	display: flex;
@@ -639,7 +653,6 @@ table td {
 /* Media Queries */
 
 @media screen and (min-width: 576px) {
-
 	.exchange__markets,
 	.exchange__transfers,
 	.exchange__orders {
@@ -777,7 +790,8 @@ table td {
 	}
 }
 
-@media screen and (min-width: 1400px) {}
+@media screen and (min-width: 1400px) {
+}
 
 @media screen and (min-width: 1600px) {
 	.exchange__section--left {

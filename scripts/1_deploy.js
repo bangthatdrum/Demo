@@ -14,22 +14,22 @@ async function main() {
 
   // Fetch accounts
   const accounts = await ethers.getSigners();
-  console.log(`Acounts fetched:\n${accounts[0].address}\n${accounts[1].address}\n`);
+  console.log(`Acounts fetched:\n${accounts[0].address}\n${accounts[1].address}\n${accounts[2].address}\n`);
 
   // Deploy 
   const token1 = await Token.deploy("Token1", "Token1", 1000000);
   await token1.deployed();
-  console.log(`Token1 deployed to ${token1.address}\n`);
+  console.log(`Token1 deployed to ${token1.address}`);
 
   const token2 = await Token.deploy("Token2", "Token2", 1000000);
   await token2.deployed();
-  console.log(`Token2 deployed to ${token2.address}\n`);
+  console.log(`Token2 deployed to ${token2.address}`);
 
   const token3 = await Token.deploy("Token3", "Token3", 1000000);
   await token3.deployed();
-  console.log(`Token3 deployed to ${token3.address}\n`);
+  console.log(`Token3 deployed to ${token3.address}`);
 
-  const exchange = await Exchange.deploy(accounts[1].address, 10);
+  const exchange = await Exchange.deploy(accounts[2].address, 0);
   await exchange.deployed();
   console.log(`Exchange deployed to: ${exchange.address}`)
 

@@ -19,13 +19,15 @@ export async function loadAccount(provider, dispatch) {
     const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
     });
+
     const account = ethers.utils.getAddress(accounts[0]);
     dispatch({ type: "ACCOUNT_LOADED", account });
+    console.log("Dispatch: account loaded");
 
     let balance = await provider.getBalance(account);
     balance = ethers.utils.formatEther(balance);
-
     dispatch({ type: "BALANCE_LOADED", balance });
+    console.log("Dispatch: balance loaded");
 
     return [account, balance];
 }
@@ -35,6 +37,7 @@ export async function loadTokens(provider, addresses, dispatch) {
     token = new ethers.Contract(addresses[0], TOKEN_ABI, provider);
     symbol = await token.symbol();
     dispatch({ type: "TOKEN1_LOADED", token, symbol });
+
     token = new ethers.Contract(addresses[1], TOKEN_ABI, provider);
     symbol = await token.symbol();
     dispatch({ type: "TOKEN2_LOADED", token, symbol });
@@ -106,7 +109,6 @@ export const subscribeToEvents = (exchange, dispatch) => {
             event
         ) => {
             const order = event.args;
-            //console.log(order)
             dispatch({ type: "NEW_ORDER_SUCCESS", order, event });
             console.log("Dispatch: new order success");
         }
@@ -122,22 +124,45 @@ export async function loadBalances(exchange, tokens, account, dispatch) {
         18
     );
     dispatch({ type: "TOKEN1_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token1 balance loaded");
 
     balance = ethers.utils.formatUnits(await tokens[1].balanceOf(account), 18);
     dispatch({ type: "TOKEN2_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token2 balance loaded");
 
     balance = ethers.utils.formatUnits(
         await exchange.balanceOf(tokens[0].address, account),
         18
     );
-
     dispatch({ type: "EXCHANGE_TOKEN1_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token1 exchange balance loaded");
 
     balance = ethers.utils.formatUnits(
         await exchange.balanceOf(tokens[1].address, account),
         18
     );
     dispatch({ type: "EXCHANGE_TOKEN2_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token2 exchange balance loaded");
+
+    balance = ethers.utils.formatUnits(
+        await exchange.balanceOf(
+            tokens[0].address,
+            "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+        ),
+        18
+    );
+    dispatch({ type: "EXCHANGE_TOKEN1_FEE_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token1 exchange balance loaded");
+
+    balance = ethers.utils.formatUnits(
+        await exchange.balanceOf(
+            tokens[1].address,
+            "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+        ),
+        18
+    );
+    dispatch({ type: "EXCHANGE_TOKEN2_FEE_BALANCE_LOADED", balance });
+    console.log("Dispatch: Token2 exchange balance loaded");
 }
 
 export const loadAllOrders = async (provider, exchange, dispatch) => {
@@ -159,7 +184,7 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
     // Fetch order events (since block zero)
     const orderStream = await exchange.queryFilter("Order", 0, block);
     const allOrders = orderStream.map((event) => event.args);
-    console.log("Dispatch: load orders");
+    console.log("Dispatch: load make orders");
     dispatch({ type: "ALL_ORDERS_LOADED", allOrders });
 };
 
@@ -256,6 +281,7 @@ export const makeSellOrder = async (
         (order.amount * order.price).toString(),
         "ether"
     );
+
     const tokenGive = tokens[0].address;
     const amountGive = ethers.utils.parseUnits(order.amount, "ether");
 
@@ -296,7 +322,14 @@ export const cancelOrder = async (provider, exchange, order, dispatch) => {
 // ------------------------------------------------------------------------------
 // FILL ORDER
 
-export const fillOrder = async (provider, exchange, order, dispatch) => {
+export const fillOrder = async (
+    provider,
+    exchange,
+    order,
+    dispatch,
+    tokens,
+    account
+) => {
     console.log("Dispatch: fill order request");
     dispatch({ type: "ORDER_FILL_REQUEST" });
 
@@ -304,6 +337,9 @@ export const fillOrder = async (provider, exchange, order, dispatch) => {
         const signer = await provider.getSigner();
         const transaction = await exchange.connect(signer).fillOrder(order.id);
         await transaction.wait();
+
+        // Reload the wallet and exchange balances to reflect the order
+        loadBalances(exchange, tokens, account, dispatch);
     } catch (error) {
         console.log("Dispatch: cancel order fail");
         dispatch({ type: "ORDER_FILL_FAIL" });

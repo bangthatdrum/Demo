@@ -60,7 +60,7 @@ const Order = () => {
         ? 
         (<label htmlFor="amount">Token1 Amount</label>)
         :
-        (<label htmlFor="amount">Token2 Amount</label>)
+        (<label htmlFor="amount">Token1 Amount</label>)
       }
 
       <form onSubmit={ isBuy ? buyHandler : sellHandler }>
@@ -75,9 +75,9 @@ const Order = () => {
       {
         isBuy 
         ? 
-        (<label htmlFor="price">Price per token</label>)
+        (<label htmlFor="price">Price Per Unit</label>)
         :
-        (<label htmlFor="price">Price per token</label>)
+        (<label htmlFor="price">Price Per Unit</label>)
       }
 
         <input 

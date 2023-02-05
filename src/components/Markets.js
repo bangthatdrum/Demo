@@ -22,8 +22,8 @@ const Markets = () => {
 
       {chainId && config[chainId] ? (
         <select name="markets" id="markets" onChange={marketHandler}>
-          <option value={`${config[chainId].token1.address},${config[chainId].token2.address}`}>Token1 / Token2</option>
-          <option value={`${config[chainId].token1.address},${config[chainId].token3.address}`}>Token1 / Token3</option>
+          <option value={`${config[chainId].token1.address},${config[chainId].token2.address}`}>Token1/Token2</option>
+          <option value={`${config[chainId].token1.address},${config[chainId].token3.address}`}>Token1/Token3</option>
         </select>
       ) : (
         <div>Not deployed to network</div>

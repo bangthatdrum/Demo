@@ -8,6 +8,7 @@ const RED = "#F45353";
 
 const account = (state) => get(state, "provider.account");
 const tokens = (state) => get(state, "tokens.contracts");
+const events = (state) => get(state, "exchange.events");
 
 const allOrders = (state) => get(state, "exchange.allOrders.data", []); // If not there, return empty array
 const cancelledOrders = (state) =>
@@ -32,6 +33,18 @@ const openOrders = (state) => {
 
   return openOrders;
 };
+
+// ------------------------------------------------------------------------------
+// MY EVENTS
+
+export const myEventsSelector = createSelector(
+  account,
+  events,
+  (account, events) => {
+    events = events.filter((e) => e.args.user === account);
+    return events;
+  }
+);
 
 // ------------------------------------------------------------------------------
 // MY FILLED ORDERS
@@ -87,7 +100,6 @@ const decorateMyFilledOrder = (order, account, tokens) => {
     orderClass: orderType === "buy" ? GREEN : RED,
     orderSign: orderType === "buy" ? "+" : "-",
   };
-  return order;
 };
 
 // ------------------------------------------------------------------------------
@@ -137,35 +149,8 @@ const decorateMyOpenOrder = (order, tokens) => {
   return {
     ...order,
     orderType,
-    orderTypeClass: orderType === "buy" ? GREEN : RED,
-  };
-};
-
-const decorateOrder = (order, tokens) => {
-  let token0Amount, token1Amount, tokenPrice;
-
-  if (order.tokenGet === tokens[1].address) {
-    token0Amount = order.amountGive;
-    token1Amount = order.amountGet;
-    tokenPrice = token0Amount / token1Amount;
-  } else {
-    token0Amount = order.amountGet;
-    token1Amount = order.amountGive;
-    tokenPrice = token1Amount / token0Amount;
-  }
-
-  // Calculate token price to 5 decimal places
-  const precision = 100000;
-
-  tokenPrice = Math.round(tokenPrice * precision) / precision;
-
-  return {
-    ...order,
-    formattedID: order.id.toString(),
-    token0Amount: ethers.utils.formatUnits(token0Amount, "ether"),
-    token1Amount: ethers.utils.formatUnits(token1Amount, "ether"),
-    tokenPrice,
-    formattedTimestamp: moment.unix(order.timestamp).format("h:mm:ssa MMM D"),
+    orderClass: orderType === "buy" ? GREEN : RED,
+    orderSign: orderType === "buy" ? "+" : "-",
   };
 };
 
@@ -195,7 +180,6 @@ export const filledOrdersSelector = createSelector(
 
     // Apply order colors
     orders = decorateFilledOrders(orders, tokens);
-    //console.log(orders);
 
     // Sort order by time descending for UI
     orders = orders.sort((a, b) => b.timestamp - a.timestamp);
@@ -205,32 +189,46 @@ export const filledOrdersSelector = createSelector(
 );
 
 const decorateFilledOrders = (orders, tokens) => {
-  let previousOrder = orders[0];
+  //let previousOrder = orders[0];
   return orders.map((order) => {
     order = decorateOrder(order, tokens);
-    order = decorateFilledOrder(order, previousOrder);
-    previousOrder = order;
+    order = decorateFilledOrder(order, tokens);
+    //previousOrder = order;
     return order;
   });
 };
 
-const decorateFilledOrder = (order, previousOrder) => {
+// const decorateFilledOrder = (order, previousOrder) => {
+//   return {
+//     ...order,
+//     tokenPriceClass: tokenPriceClass(order.tokenPrice, order.id, previousOrder),
+//   };
+// };
+
+const decorateFilledOrder = (order, tokens) => {
+  let orderType;
+  orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
+  orderType = order.tokenGet === tokens[0].address ? "buy" : "sell";
   return {
     ...order,
-    tokenPriceClass: tokenPriceClass(order.tokenPrice, order.id, previousOrder),
+    orderType,
+    orderClass: orderType === "buy" ? GREEN : RED,
+    orderClassOpposite: orderType === "buy" ? RED : GREEN,
+    orderSign: orderType === "buy" ? "+" : "-",
+    orderSignOpposite: orderType === "buy" ? "-" : "+",
   };
 };
 
-const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
-  if (previousOrder.id === orderId) {
-    return GREEN;
-  }
-  if (previousOrder.tokenPrice <= tokenPrice) {
-    return GREEN;
-  } else {
-    return RED;
-  }
-};
+// const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
+//   if (previousOrder.id === orderId) {
+//     return GREEN;
+//   }
+//   if (previousOrder.tokenPrice <= tokenPrice) {
+//     return GREEN;
+//   } else {
+//     return RED;
+//   }
+// };
 
 // ------------------------------------------------------------------------------
 // ORDER BOOK
@@ -284,6 +282,35 @@ export const orderBookSelector = createSelector(
   }
 );
 
+const decorateOrder = (order, tokens) => {
+  let token0Amount, token1Amount, tokenPrice;
+
+  if (order.tokenGet === tokens[1].address) {
+    token0Amount = order.amountGive;
+    token1Amount = order.amountGet;
+    tokenPrice = token1Amount / token0Amount;
+  } else {
+    token0Amount = order.amountGet;
+    token1Amount = order.amountGive;
+    tokenPrice = token1Amount / token0Amount;
+  }
+
+  // Calculate token price to 5 decimal places
+  const precision = 100000;
+
+  tokenPrice = Math.round(tokenPrice * precision) / precision;
+
+  return {
+    ...order,
+    //fee: order[6].toString(),
+    formattedID: order.id.toString(),
+    token0Amount: ethers.utils.formatUnits(token0Amount, "ether"),
+    token1Amount: ethers.utils.formatUnits(token1Amount, "ether"),
+    tokenPrice,
+    formattedTimestamp: moment.unix(order.timestamp).format("h:mm:ssa MMM D"),
+  };
+};
+
 const decorateOrderBookOrder = (order, tokens) => {
   const orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
 
@@ -291,7 +318,7 @@ const decorateOrderBookOrder = (order, tokens) => {
     ...order,
     orderType,
     orderTypeClass: orderType === "buy" ? GREEN : RED,
-    orderFillAction: orderType === "buy" ? "sell" : "buy",
+    orderFillAction: orderType === "buy" ? "buy" : "sell",
   };
 };
 
@@ -321,7 +348,6 @@ export const priceChartSelector = createSelector(
 
     // Add display attributes
     orders = orders.map((order) => decorateOrder(order, tokens));
-    //orders.map((order) => console.log(order.formattedTimestamp))
 
     // Get last 2 orders for final price & price change
     let secondLastOrder, lastOrder;
@@ -347,13 +373,11 @@ export const priceChartSelector = createSelector(
 const buildGraphData = (orders) => {
   // Group orders by each time window (seconds, minutes, or hours etc)
   orders = groupBy(orders, (o) =>
-    moment.unix(o.timestamp).startOf("minute").format()
+    moment.unix(o.timestamp).startOf("minutes").format()
   );
-  //console.log(orders)
 
   // Get each time window label
   const hours = Object.keys(orders);
-  //console.log(hours)
 
   // Iterate over each time window
   const graphData = hours.map((hour) => {

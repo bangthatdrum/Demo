@@ -26,7 +26,7 @@ const Transactions = () => {
   };
 
   const tabHandler = (event) => {
-    console.log(event.target.id);
+    //console.log(event.target.id);
     if (event.target.id === "orders") {
       orderRef.current.className = "tab tab--active";
       tradeRef.current.className = "tab";
@@ -79,7 +79,11 @@ const Transactions = () => {
                     <img src={sort} alt="Sort" />
                   </th>
                   <th>
-                    {symbols && symbols[0]}/{symbols && symbols[1]}
+                    {symbols && symbols[1]}
+                    <img src={sort} alt="Sort" />
+                  </th>
+                  <th>
+                    {symbols && symbols[1]}/{symbols && symbols[0]}
                     <img src={sort} alt="Sort" />
                   </th>
                   <th>CANCEL</th>
@@ -90,10 +94,11 @@ const Transactions = () => {
                   myOpenOrders.map((order, index) => {
                     return (
                       <tr key={index}>
-                        <td style={{ color: `${order.orderTypeClass}` }}>
-                          {order.token0Amount}
+                        <td>{order.token0Amount}</td>
+                        <td>{order.token1Amount}</td>
+                        <td style={{ color: `${order.orderClass}` }}>
+                          {order.tokenPrice}
                         </td>
-                        <td>{order.tokenPrice}</td>
                         <td>
                           <button
                             className="button--sm"
@@ -113,7 +118,7 @@ const Transactions = () => {
         <div>
           {/*Show trades/filled orders TBC*/}
           <div className="component__header flex-between">
-            <h2>My Transactions</h2>
+            <h2>My Trades</h2>
 
             <div className="tabs">
               <button
@@ -146,7 +151,11 @@ const Transactions = () => {
                   <img src={sort} alt="Sort" />
                 </th>
                 <th>
-                  {symbols && symbols[0]}/{symbols && symbols[1]}
+                  {symbols && symbols[1]}
+                  <img src={sort} alt="Sort" />
+                </th>
+                <th>
+                  {symbols && symbols[1]}/{symbols && symbols[0]}
                   <img src={sort} alt="Sort" />
                 </th>
               </tr>
@@ -157,11 +166,11 @@ const Transactions = () => {
                   return (
                     <tr key={index}>
                       <td>{order.formattedTimestamp}</td>
+                      <td>{order.token0Amount}</td>
+                      <td>{order.token1Amount}</td>
                       <td style={{ color: `${order.orderClass}` }}>
-                        {order.orderSign}
-                        {order.token0Amount}
+                        {order.tokenPrice}
                       </td>
-                      <td>{order.tokenPrice}</td>
                     </tr>
                   );
                 })}

@@ -28,7 +28,11 @@ const Trades = () => {
                 <img src={sort} alt="Sort" />
               </th>
               <th>
-                {symbols && symbols[0]}/{symbols && symbols[1]}
+                {symbols && symbols[1]}
+                <img src={sort} alt="Sort" />
+              </th>
+              <th>
+                {symbols && symbols[1]}/{symbols && symbols[0]}
                 <img src={sort} alt="Sort" />
               </th>
             </tr>
@@ -42,10 +46,11 @@ const Trades = () => {
                 return (
                   <tr key={index}>
                     <td>{order.formattedTimestamp}</td>
-                    <td style={{ color: `${order.tokenPriceClass}` }}>
-                      {order.token0Amount}
+                    <td>{order.token0Amount}</td>
+                    <td>{order.token1Amount}</td>
+                    <td style={{ color: `${order.orderClass}` }}>
+                      {order.tokenPrice}
                     </td>
-                    <td>{order.tokenPrice}</td>
                   </tr>
                 );
               })}

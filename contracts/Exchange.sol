@@ -194,7 +194,7 @@
 			// Fee is paid by the user who filled the order (msg.sender)
 			// Fee is deducted from _amountGet
 			uint256 _feeAmount = (_amountGet * feePercent/100);	
-
+		
 			// User 1 make order 
 			tokens[_tokenGive][_user] = tokens[_tokenGive][_user] - _amountGive;
 			tokens[_tokenGet][_user] = tokens[_tokenGet][_user] + _amountGet;				

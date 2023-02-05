@@ -75,13 +75,7 @@ const DEFAULT_EXCHANGE_STATE = {
   loaded: false,
   contract: {},
   balances: {},
-  transaction: {
-    isSuccessful: false,
-  },
-  allOrders: {
-    loaded: false,
-    data: [],
-  },
+  feeBalances: {},
   cancelledOrders: {
     loaded: false,
     data: [],
@@ -90,6 +84,17 @@ const DEFAULT_EXCHANGE_STATE = {
     loaded: false,
     data: [],
   },
+  allOrders: {
+    loaded: false,
+    data: [],
+  },
+  transaction: {
+    transactionType: "",
+    isPending: false,
+    isSuccessful: false,
+    isError: false,
+  },
+  transferInProgress: false,
   events: [],
 };
 
@@ -158,7 +163,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           ...state.cancelledOrders,
           data: [...state.cancelledOrders.data, action.order],
         },
-        events: [...state.events, action.event],
+        events: [action.event, ...state.events],
       };
     case "ORDER_CANCEL_FAIL":
       return {
@@ -204,7 +209,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           ...state.filledOrders.data,
           data,
         },
-        events: [...state.events, action.event],
+        events: [action.event, ...state.events],
       };
     case "ORDER_FILL_FAIL":
       return {
@@ -230,6 +235,16 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         ...state,
         balances: [...state.balances, action.balance],
       };
+    case "EXCHANGE_TOKEN1_FEE_BALANCE_LOADED":
+      return {
+        ...state,
+        feeBalances: [action.balance],
+      };
+    case "EXCHANGE_TOKEN2_FEE_BALANCE_LOADED":
+      return {
+        ...state,
+        feeBalances: [...state.feeBalances, action.balance],
+      };
 
     // ------------------------------------------------------------------------------
     // TRANSFER CASES (DEPOSIT & WITHDRAWS)
@@ -237,7 +252,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
     case "TRANSFER_REQUEST":
       return {
         ...state,
-        trasnsaction: {
+        transaction: {
           transactionType: "Transfer",
           isPending: true,
           isSuccessful: false,
@@ -253,7 +268,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isSuccessful: true,
         },
         transferInProgress: false,
-        events: [...state.events, action.event],
+        events: [action.event, ...state.events],
       };
     case "TRANSFER_FAIL":
       return {
@@ -303,7 +318,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           isPending: false,
           isSuccessful: true,
         },
-        events: [...state.events, action.event],
+        events: [action.event, ...state.events],
       };
 
     case "NEW_ORDER_FAIL":
