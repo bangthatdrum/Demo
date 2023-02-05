@@ -381,15 +381,14 @@ const buildGraphData = (orders) => {
 
   // Iterate over each time window
   const graphData = hours.map((hour) => {
+    console.log(hour)
     // Get order for each size of time window
     const group = orders[hour];
-
     // Get open, high, low, close
     const open = group[0];
     const high = maxBy(group, "tokenPrice");
     const low = minBy(group, "tokenPrice");
     const close = group[group.length - 1];
-
     return {
       x: new Date(hour),
       y: [open.tokenPrice, high.tokenPrice, low.tokenPrice, close.tokenPrice],
