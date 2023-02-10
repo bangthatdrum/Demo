@@ -89,16 +89,20 @@ const decorateMyFilledOrders = (orders, account, tokens) => {
 const decorateMyFilledOrder = (order, account, tokens) => {
   const myOrder = order.maker === account;
   let orderType;
+  let fee;
   if (myOrder) {
     orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
+    fee = 0;
   } else {
     orderType = order.tokenGet === tokens[0].address ? "buy" : "sell";
+    fee = ethers.utils.formatUnits(order.fee.toString(), "ether");
   }
   return {
     ...order,
     orderType,
     orderClass: orderType === "buy" ? GREEN : RED,
     orderSign: orderType === "buy" ? "+" : "-",
+    formattedFee: fee,
   };
 };
 
@@ -216,6 +220,7 @@ const decorateFilledOrder = (order, tokens) => {
     orderClassOpposite: orderType === "buy" ? RED : GREEN,
     orderSign: orderType === "buy" ? "+" : "-",
     orderSignOpposite: orderType === "buy" ? "-" : "+",
+    formattedFee: ethers.utils.formatUnits(order.fee.toString(), "ether"),
   };
 };
 

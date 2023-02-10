@@ -62,6 +62,7 @@ export const subscribeToEvents = (exchange, dispatch) => {
             amountGive,
             creator,
             timestamp,
+            fee,
             event
         ) => {
             const order = event.args;

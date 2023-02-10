@@ -158,6 +158,7 @@ const Transactions = () => {
                   {symbols && symbols[1]}/{symbols && symbols[0]}
                   <img src={sort} alt="Sort" />
                 </th>
+                <th>Fee</th>
               </tr>
             </thead>
             <tbody>
@@ -171,6 +172,7 @@ const Transactions = () => {
                       <td style={{ color: `${order.orderClass}` }}>
                         {order.tokenPrice}
                       </td>
+                      <td>{order.formattedFee}</td>
                     </tr>
                   );
                 })}

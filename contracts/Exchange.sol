@@ -58,7 +58,8 @@
 			address tokenGive, 
 			uint256 amountGive,
 			address maker,
-			uint256 timestamp
+			uint256 timestamp,
+			uint256 fee
 		);
 
 		// ------------------------
@@ -215,7 +216,8 @@
 				_tokenGive,
 				_amountGive,
 				_user, // make order
-				block.timestamp
+				block.timestamp,
+				_feeAmount
 				);
 			
 		}

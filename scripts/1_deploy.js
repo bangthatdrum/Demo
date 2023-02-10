@@ -29,7 +29,7 @@ async function main() {
   await token3.deployed();
   console.log(`Token3 deployed to ${token3.address}`);
 
-  const exchange = await Exchange.deploy(accounts[2].address, 0);
+  const exchange = await Exchange.deploy(accounts[2].address, 50);
   await exchange.deployed();
   console.log(`Exchange deployed to: ${exchange.address}`)
 
