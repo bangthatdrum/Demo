@@ -59,7 +59,6 @@ function App() {
 
     // Listen to events
     subscribeToEvents(exchange, dispatch);
-
     // Fetch all orders
     loadAllOrders(provider, exchange, dispatch);
   };
@@ -92,7 +91,6 @@ function App() {
       </main>
 
       <Alert />
-
     </div>
   );
 }

@@ -50,7 +50,7 @@ export async function loadExchange(provider, address, dispatch) {
     return exchange;
 }
 
-export const subscribeToEvents = (exchange, dispatch) => {
+export function subscribeToEvents(exchange, dispatch) {
     exchange.on(
         "Trade",
         (
@@ -166,7 +166,7 @@ export async function loadBalances(exchange, tokens, account, dispatch) {
     console.log("Dispatch: Token2 exchange balance loaded");
 }
 
-export const loadAllOrders = async (provider, exchange, dispatch) => {
+export async function loadAllOrders(provider, exchange, dispatch) {
     const block = await provider.getBlockNumber();
     console.log("Current block: " + block);
 
@@ -175,7 +175,7 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
     const cancelledOrders = cancelStream.map((event) => event.args);
     console.log("Dispatch: load cancelled orders");
     dispatch({ type: "CANCELLED_ORDERS_LOADED", cancelledOrders, cancelStream });
-    console.log(cancelStream)
+    
     // Fetch trade/filled events (since block zero)
     const filledStream = await exchange.queryFilter("Trade", 0, block);
     const filledOrders = filledStream.map((event) => event.args);

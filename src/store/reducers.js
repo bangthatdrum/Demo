@@ -119,7 +119,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.cancelledOrders,
         },
-        events: [...action.cancelStream, ...state.events],
+        events: [...action.cancelStream],
       };
 
     case "FILLED_ORDERS_LOADED":
@@ -129,7 +129,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.filledOrders,
         },
-        events: [...action.filledStream, ...state.events],
+        events: [...action.filledStream],
       };
 
     case "ALL_ORDERS_LOADED":
@@ -139,7 +139,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.allOrders,
         },
-        events: [...action.orderStream, ...state.events],
+        events: [...action.orderStream],
       };
 
     // ------------------------------------------------------------------------------
@@ -155,6 +155,15 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
         },
       };
     case "ORDER_CANCEL_SUCCESS":
+      // Don't add duplicate events
+      index = state.events.findIndex(
+        (event) => event.transactionHash === action.event.transactionHash
+      );     
+      if (index === -1) {
+        data = [...state.events, action.event];
+      } else {
+        data = state.events;
+      }
       return {
         ...state,
         transaction: {
@@ -166,7 +175,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           ...state.cancelledOrders,
           data: [...state.cancelledOrders.data, action.order],
         },
-        events: [action.event, ...state.events],
+        events: data,
       };
     case "ORDER_CANCEL_FAIL":
       return {

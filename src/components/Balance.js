@@ -15,7 +15,7 @@ const Balance = () => {
 
   const provider = useSelector((state) => state.provider.connection);
   const account = useSelector((state) => state.provider.account);
-  console.log(account);
+
   const exchange = useSelector((state) => state.exchange.contract);
   const exchangeBalances = useSelector((state) => state.exchange.balances);
 
@@ -43,11 +43,11 @@ const Balance = () => {
     }
   };
 
-  const amountHandler = (event, token) => {
-    if (token.address === tokens[0].address) {
-      setToken1TransferAmount(event.target.value);
-    }
-  };
+  // const amountHandler = (event, token) => {
+  //   if (token.address === tokens[0].address) {
+  //     setToken1TransferAmount(event.target.value);
+  //   }
+  // };
 
   const depositHandler = (event, token) => {
     event.preventDefault(); // Override default action (reload page)
@@ -103,7 +103,7 @@ const Balance = () => {
     if (exchange && tokens[0] && tokens[1] && account) {
       loadBalances(exchange, tokens, account, dispatch);
     }
-  }, [exchange, tokens, account, transferInProgress]); // If change trigger whole thing again!
+  }, [exchange, tokens, account, transferInProgress, dispatch]); // If change trigger whole thing again!
 
   return (
     <div className="component exchange__transfers">
@@ -145,7 +145,7 @@ const Balance = () => {
             {tokenBalances && tokenBalances[0]}
           </p>
           <p>
-            <small>Exchange1</small>
+            <small>Exchange</small>
             <br />
             {exchangeBalances && exchangeBalances[0]}
           </p>
