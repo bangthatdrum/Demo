@@ -119,6 +119,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.cancelledOrders,
         },
+        events: [...action.cancelStream, ...state.events],
       };
 
     case "FILLED_ORDERS_LOADED":
@@ -128,6 +129,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.filledOrders,
         },
+        events: [...action.filledStream, ...state.events],
       };
 
     case "ALL_ORDERS_LOADED":
@@ -137,6 +139,7 @@ export const exchange = (state = DEFAULT_EXCHANGE_STATE, action) => {
           loaded: true,
           data: action.allOrders,
         },
+        events: [...action.orderStream, ...state.events],
       };
 
     // ------------------------------------------------------------------------------

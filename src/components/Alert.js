@@ -18,12 +18,13 @@ const Alert = () => {
   const removeHandler = async (e) => {
     alertRef.current.className = "alert--remove";
   };
-
+  //console.log(events[0])
   useEffect(() => {
     if ((isPending || isError) && (events[0] && account)) {
+      console.log('alert')
       alertRef.current.className = "alert";
     }
-  }, [events, isPending, isError, account]);
+  }, [events, isPending, isError, account]); // If any change reload
 
   return (
     <div>

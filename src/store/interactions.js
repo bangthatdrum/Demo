@@ -174,19 +174,19 @@ export const loadAllOrders = async (provider, exchange, dispatch) => {
     const cancelStream = await exchange.queryFilter("Cancel", 0, block);
     const cancelledOrders = cancelStream.map((event) => event.args);
     console.log("Dispatch: load cancelled orders");
-    dispatch({ type: "CANCELLED_ORDERS_LOADED", cancelledOrders });
-
+    dispatch({ type: "CANCELLED_ORDERS_LOADED", cancelledOrders, cancelStream });
+    console.log(cancelStream)
     // Fetch trade/filled events (since block zero)
     const filledStream = await exchange.queryFilter("Trade", 0, block);
     const filledOrders = filledStream.map((event) => event.args);
     console.log("Dispatch: load filled orders");
-    dispatch({ type: "FILLED_ORDERS_LOADED", filledOrders });
+    dispatch({ type: "FILLED_ORDERS_LOADED", filledOrders, filledStream});
 
     // Fetch order events (since block zero)
     const orderStream = await exchange.queryFilter("Order", 0, block);
     const allOrders = orderStream.map((event) => event.args);
     console.log("Dispatch: load make orders");
-    dispatch({ type: "ALL_ORDERS_LOADED", allOrders });
+    dispatch({ type: "ALL_ORDERS_LOADED", allOrders, orderStream});
 };
 
 // ------------------------------------------------------------------------------

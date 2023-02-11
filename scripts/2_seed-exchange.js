@@ -229,208 +229,208 @@ async function main() {
   // -----------------------------------------------------------------------------
   // SEED FILLED ORDERS
 
-  console.log("SEED FILLED ORDERS\n");
+//   console.log("SEED FILLED ORDERS\n");
 
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token1.address, toWei(100), token2.address, toWei(100));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token1.address, toWei(100), token2.address, toWei(100));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
 
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2\n`);
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2\n`);
 
-  for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 30) + 13;
-  let rand2 = Math.floor(Math.random() * 30) + 13;
+//   for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 30) + 13;
+//   let rand2 = Math.floor(Math.random() * 30) + 13;
 
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
 
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-await wait(1);
-
-for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 60) + 40;
-  let rand2 = Math.floor(Math.random() * 60) + 40;
-
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
-
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-await wait(1);
-
-for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 100) + 50;
-  let rand2 = Math.floor(Math.random() * 100) + 50;
-
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
-
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-await wait(1);
-
-for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 80) + 29;
-  let rand2 = Math.floor(Math.random() * 80) + 29;
-
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
-
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-await wait(1);
-
-for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 20) + 16;
-  let rand2 = Math.floor(Math.random() * 20) + 16;
-
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
-
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-await wait(1);
-
-for (let i = 1; i <= 30; i++) {
-  let rand1 = Math.floor(Math.random() * 50) + 30;
-  let rand2 = Math.floor(Math.random() * 50) + 30;
-  // User1 makes 10 sell orders
-  transaction = await exchange
-    .connect(user1)
-    .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user1`);
-
-  transaction = await exchange.connect(user2).fillOrder(orderID);
-  result = await transaction.wait();
-  console.log(`Order ${orderID} filled by user2`);
-}
-
-  result = await exchange
-    .connect(user1)
-    .balanceOf(token1.address, user1.address);
-  console.log(`\nUser1 token1 balance on exchange: ${toEther(result)}`);
-  result = await exchange
-    .connect(user1)
-    .balanceOf(token2.address, user1.address);
-  console.log(`User1 token2 balance on exchange: ${toEther(result)}`);
-  result = await exchange
-    .connect(user1)
-    .balanceOf(token1.address, user2.address);
-  console.log(`User2 token1 balance on exchange: ${toEther(result)}`);
-  result = await exchange
-    .connect(user1)
-    .balanceOf(token2.address, user2.address);
-  console.log(`User2 token2 balance on exchange: ${toEther(result)}`);
-  result = await exchange
-    .connect(user3)
-    .balanceOf(token1.address, user3.address);
-  console.log(`User3 token1 balance on exchange: ${toEther(result)}`);
-  result = await exchange
-    .connect(user3)
-    .balanceOf(token2.address, user3.address);
-  console.log(`User3 token2 balance on exchange: ${toEther(result)}\n`);
-
-  // -----------------------------------------------------------------------------
-  // SEED OPEN ORDERS
-
-  console.log("SEED OPEN ORDERS\n");
-
-// User1 makes 10 sell orders
-for (let i = 1; i <= 20; i++) {
-  transaction = await exchange
-    .connect(user2)
-    .makeOrder(token2.address, toWei(10 * i), token1.address, toWei(10));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user2`);
-}
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
 
 // await wait(1);
 
-// User2 makes 10 buy orders
-//function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public
-for (let i = 1; i <= 20; i++) {
-  transaction = await exchange
-    .connect(user2)
-    .makeOrder(token1.address, toWei(10 * i), token2.address, toWei(10));
-  result = await transaction.wait();
-  orderID = result.events[0].args.id;
-  console.log(`Make order ${orderID} by user2`);
-}
+// for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 60) + 40;
+//   let rand2 = Math.floor(Math.random() * 60) + 40;
 
-result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
-console.log(`\nUser1 token1 balance on exchange: ${toEther(result)}`);
-result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
-console.log(`User1 token2 balance on exchange: ${toEther(result)}`);
-result = await exchange.connect(user1).balanceOf(token1.address, user2.address);
-console.log(`User2 token1 balance on exchange: ${toEther(result)}`);
-result = await exchange.connect(user1).balanceOf(token2.address, user2.address);
-console.log(`User2 token2 balance on exchange: ${toEther(result)}`);
-result = await exchange.connect(user3).balanceOf(token1.address, user3.address);
-console.log(`User3 token1 balance on exchange: ${toEther(result)}`);
-result = await exchange.connect(user3).balanceOf(token2.address, user3.address);
-console.log(`User3 token2 balance on exchange: ${toEther(result)}\n`);
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
 
-result = await token1.connect(user1).getBalanceOf(user1.address);
-console.log(`Initial token1 balance user1: ${toEther(result)}`);
-result = await token2.connect(user1).getBalanceOf(user1.address);
-console.log(`Initial token2 balance user1: ${toEther(result)}`);
-result = await token1.connect(user2).getBalanceOf(user2.address);
-console.log(`Initial token1 balance user2: ${toEther(result)}`);
-result = await token2.connect(user2).getBalanceOf(user2.address);
-console.log(`Initial token2 balance user2: ${toEther(result)}`);
-result = await token1.connect(user3).getBalanceOf(user3.address);
-console.log(`Initial token1 balance user3: ${toEther(result)}`);
-result = await token2.connect(user3).getBalanceOf(user3.address);
-console.log(`Initial token2 balance user3: ${toEther(result)}\n`);
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
+
+// await wait(1);
+
+// for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 100) + 50;
+//   let rand2 = Math.floor(Math.random() * 100) + 50;
+
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
+
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
+
+// await wait(1);
+
+// for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 80) + 29;
+//   let rand2 = Math.floor(Math.random() * 80) + 29;
+
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
+
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
+
+// await wait(1);
+
+// for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 20) + 16;
+//   let rand2 = Math.floor(Math.random() * 20) + 16;
+
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token2.address, toWei(rand1), token1.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
+
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
+
+// await wait(1);
+
+// for (let i = 1; i <= 30; i++) {
+//   let rand1 = Math.floor(Math.random() * 50) + 30;
+//   let rand2 = Math.floor(Math.random() * 50) + 30;
+//   // User1 makes 10 sell orders
+//   transaction = await exchange
+//     .connect(user1)
+//     .makeOrder(token1.address, toWei(rand1), token2.address, toWei(rand2));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user1`);
+
+//   transaction = await exchange.connect(user2).fillOrder(orderID);
+//   result = await transaction.wait();
+//   console.log(`Order ${orderID} filled by user2`);
+// }
+
+//   result = await exchange
+//     .connect(user1)
+//     .balanceOf(token1.address, user1.address);
+//   console.log(`\nUser1 token1 balance on exchange: ${toEther(result)}`);
+//   result = await exchange
+//     .connect(user1)
+//     .balanceOf(token2.address, user1.address);
+//   console.log(`User1 token2 balance on exchange: ${toEther(result)}`);
+//   result = await exchange
+//     .connect(user1)
+//     .balanceOf(token1.address, user2.address);
+//   console.log(`User2 token1 balance on exchange: ${toEther(result)}`);
+//   result = await exchange
+//     .connect(user1)
+//     .balanceOf(token2.address, user2.address);
+//   console.log(`User2 token2 balance on exchange: ${toEther(result)}`);
+//   result = await exchange
+//     .connect(user3)
+//     .balanceOf(token1.address, user3.address);
+//   console.log(`User3 token1 balance on exchange: ${toEther(result)}`);
+//   result = await exchange
+//     .connect(user3)
+//     .balanceOf(token2.address, user3.address);
+//   console.log(`User3 token2 balance on exchange: ${toEther(result)}\n`);
+
+//   // -----------------------------------------------------------------------------
+//   // SEED OPEN ORDERS
+
+//   console.log("SEED OPEN ORDERS\n");
+
+// // User1 makes 10 sell orders
+// for (let i = 1; i <= 20; i++) {
+//   transaction = await exchange
+//     .connect(user2)
+//     .makeOrder(token2.address, toWei(10 * i), token1.address, toWei(10));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user2`);
+// }
+
+// // await wait(1);
+
+// // User2 makes 10 buy orders
+// //function makeOrder(address _tokenGet, uint256 _amountGet, address _tokenGive, uint256 _amountGive) public
+// for (let i = 1; i <= 20; i++) {
+//   transaction = await exchange
+//     .connect(user2)
+//     .makeOrder(token1.address, toWei(10 * i), token2.address, toWei(10));
+//   result = await transaction.wait();
+//   orderID = result.events[0].args.id;
+//   console.log(`Make order ${orderID} by user2`);
+// }
+
+// result = await exchange.connect(user1).balanceOf(token1.address, user1.address);
+// console.log(`\nUser1 token1 balance on exchange: ${toEther(result)}`);
+// result = await exchange.connect(user1).balanceOf(token2.address, user1.address);
+// console.log(`User1 token2 balance on exchange: ${toEther(result)}`);
+// result = await exchange.connect(user1).balanceOf(token1.address, user2.address);
+// console.log(`User2 token1 balance on exchange: ${toEther(result)}`);
+// result = await exchange.connect(user1).balanceOf(token2.address, user2.address);
+// console.log(`User2 token2 balance on exchange: ${toEther(result)}`);
+// result = await exchange.connect(user3).balanceOf(token1.address, user3.address);
+// console.log(`User3 token1 balance on exchange: ${toEther(result)}`);
+// result = await exchange.connect(user3).balanceOf(token2.address, user3.address);
+// console.log(`User3 token2 balance on exchange: ${toEther(result)}\n`);
+
+// result = await token1.connect(user1).getBalanceOf(user1.address);
+// console.log(`Initial token1 balance user1: ${toEther(result)}`);
+// result = await token2.connect(user1).getBalanceOf(user1.address);
+// console.log(`Initial token2 balance user1: ${toEther(result)}`);
+// result = await token1.connect(user2).getBalanceOf(user2.address);
+// console.log(`Initial token1 balance user2: ${toEther(result)}`);
+// result = await token2.connect(user2).getBalanceOf(user2.address);
+// console.log(`Initial token2 balance user2: ${toEther(result)}`);
+// result = await token1.connect(user3).getBalanceOf(user3.address);
+// console.log(`Initial token1 balance user3: ${toEther(result)}`);
+// result = await token2.connect(user3).getBalanceOf(user3.address);
+// console.log(`Initial token2 balance user3: ${toEther(result)}\n`);
 
 }
 

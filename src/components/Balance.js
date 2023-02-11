@@ -15,7 +15,7 @@ const Balance = () => {
 
   const provider = useSelector((state) => state.provider.connection);
   const account = useSelector((state) => state.provider.account);
-
+  console.log(account);
   const exchange = useSelector((state) => state.exchange.contract);
   const exchangeBalances = useSelector((state) => state.exchange.balances);
 
@@ -168,7 +168,17 @@ const Balance = () => {
           />
 
           <button className="button" type="submit">
-            {isDeposit ? <span>Deposit</span> : <span>Withdraw</span>}
+            {account ? (
+              isDeposit ? (
+                <span>Deposit</span>
+              ) : (
+                <span>Withdraw</span>
+              )
+            ) : isDeposit ? (
+              <span>Sign in to Deposit</span>
+            ) : (
+              <span>Sign in to Withdraw</span>
+            )}
           </button>
         </form>
       </div>
@@ -214,7 +224,17 @@ const Balance = () => {
           />
 
           <button className="button" type="submit">
-            {isDeposit ? <span>Deposit</span> : <span>Withdraw</span>}
+            {account ? (
+              isDeposit ? (
+                <span>Deposit</span>
+              ) : (
+                <span>Withdraw</span>
+              )
+            ) : isDeposit ? (
+              <span>Sign in to Deposit</span>
+            ) : (
+              <span>Sign in to Withdraw</span>
+            )}
           </button>
         </form>
       </div>
