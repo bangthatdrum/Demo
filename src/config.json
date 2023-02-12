@@ -19,16 +19,16 @@
 	},
 	"5": {
 		"exchange": {
-			"address": "0xD09C5A64F55363226C2adE28f719c77D51Ad10D6"
+			"address": "0x37F7d299C63AAbc8b93464c8652899dA6C39DE0e"
 		},
 		"token1": {
-			"address": "0xae1A196407D02a88D5Eb795D049a3A8314A48f28"
+			"address": "0xbe05A9f4B911bC67aEd0e5BcF9a7DC43715FF566"
 		},
 		"token2": {
-			"address": "0xf33948000D51357E5d66041549893994C7A40a7D"
+			"address": "0xb533Ec90336c059aaE06dCB33604C80bc0B081E8"
 		},
 		"token3": {
-			"address": "0x6B6eF59016517A2df50685DaD33394080EC8b1E7"
+			"address": "0xD509603A484d41f5Cb4a9930f3C7314d0698e426"
 		},
 		"explorerURL": "https://goerli.etherscan.io/"
 	}

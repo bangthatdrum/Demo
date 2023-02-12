@@ -54,7 +54,7 @@ const Alert = () => {
           </a>
         </div>
       ) : (
-        console.log('No alert found at end of if else!')
+        console.log()
       )}
     </div>
   );
