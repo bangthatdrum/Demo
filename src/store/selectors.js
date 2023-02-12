@@ -203,13 +203,6 @@ const decorateFilledOrders = (orders, tokens) => {
   });
 };
 
-// const decorateFilledOrder = (order, previousOrder) => {
-//   return {
-//     ...order,
-//     tokenPriceClass: tokenPriceClass(order.tokenPrice, order.id, previousOrder),
-//   };
-// };
-
 const decorateFilledOrder = (order, tokens) => {
   let orderType;
   orderType = order.tokenGet === tokens[1].address ? "sell" : "buy";
@@ -224,17 +217,6 @@ const decorateFilledOrder = (order, tokens) => {
     formattedFee: ethers.utils.formatUnits(order.fee.toString(), "ether"),
   };
 };
-
-// const tokenPriceClass = (tokenPrice, orderId, previousOrder) => {
-//   if (previousOrder.id === orderId) {
-//     return GREEN;
-//   }
-//   if (previousOrder.tokenPrice <= tokenPrice) {
-//     return GREEN;
-//   } else {
-//     return RED;
-//   }
-// };
 
 // ------------------------------------------------------------------------------
 // ORDER BOOK
@@ -335,7 +317,7 @@ export const priceChartSelector = createSelector(
   filledOrders,
   tokens,
   (orders, tokens) => {
-    if (!tokens[0] || !tokens[1]) {
+    if (!tokens[0] || !tokens[1] || !orders[0] || !orders[1]) {
       return;
     }
 
@@ -377,14 +359,54 @@ export const priceChartSelector = createSelector(
 );
 
 const buildGraphData = (orders) => {
-  // Group orders by each time window (seconds, minutes, or hours etc)
-  orders = groupBy(orders, (o) =>
-    moment.unix(o.timestamp).startOf("minutes").format()
-  );
+  const TIMEWINDOW_SIZE = 60 * 1; // Seconds
+  let startTime = orders[0].timestamp;
+  let outputTimestamps = [];
+  let outputOrders = [];
+
+  for (let i = 0; i < orders.length; i++) {
+    let time = orders[i].timestamp;
+    let increment = Math.floor((time - startTime) / TIMEWINDOW_SIZE); // how many time increments have passed
+    if (!outputTimestamps[increment]) {
+      outputTimestamps[increment] = [];
+    }
+    if (!outputOrders[increment]) {
+      outputOrders[increment] = [];
+    }
+    outputTimestamps[increment].push(moment.unix(orders[i].timestamp).format());
+    //console.log(i,' ',increment)
+    outputOrders[increment].push(orders[i]);
+  }
+
+  let newTimestamps = [];
+  let newOrders = [];
+  let count = 0;
+
+  // Remove any arrays that are undefined (due to increment index)
+  for (let i = 0; i < outputTimestamps.length; i++) {
+    if (typeof outputTimestamps[i] !== "undefined") {
+      newTimestamps[count] = outputTimestamps[i];
+      newOrders[count] = outputOrders[i];
+      count++;
+    }
+  }
+
+  // Dynamically populate object holding orders grouped by time window label
+  var data = {};
+  for (let i = 0; i < newTimestamps.length; i++) {
+    data[`${newTimestamps[i][0]}`] = newOrders[i];
+  }
+  orders = data;
+
+  // orders = groupBy(
+  //   orders,
+  //   (o) => moment.unix(o.timestamp).startOf("minutes").format() // set to minutes - zero out secs, ms (so they can be grouped by minutes)
+  // );
+  //console.log(orders);
 
   // Get each time window label
   const hours = Object.keys(orders);
-
+  //console.log(hours)
   // Iterate over each time window
   const graphData = hours.map((hour) => {
     // Get order for each size of time window
