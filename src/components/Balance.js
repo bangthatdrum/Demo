@@ -43,12 +43,6 @@ const Balance = () => {
     }
   };
 
-  // const amountHandler = (event, token) => {
-  //   if (token.address === tokens[0].address) {
-  //     setToken1TransferAmount(event.target.value);
-  //   }
-  // };
-
   const depositHandler = (event, token) => {
     event.preventDefault(); // Override default action (reload page)
     if (token.address === tokens[0].address) {

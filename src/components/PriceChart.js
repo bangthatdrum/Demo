@@ -9,10 +9,17 @@ import { priceChartSelector } from "../store/selectors";
 
 import Banner from "./Banner";
 
+import { getProductNameById } from '../store/selectors'
+
 const PriceChart = () => {
   const account = useSelector((state) => state.provider.account);
   const symbols = useSelector((state) => state.tokens.symbols);
   const priceChart = useSelector(priceChartSelector);
+
+const productId = 25;
+const productName = useSelector((state) => getProductNameById(state, productId));
+console.log(productName)
+
 
   return (
     <div className="component exchange__chart">

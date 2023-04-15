@@ -1,4 +1,5 @@
 import { createSelector } from "reselect";
+import { useSelector } from "react-redux";
 import { get, groupBy, reject, minBy, maxBy } from "lodash";
 import moment from "moment";
 import { ethers } from "ethers";
@@ -33,6 +34,12 @@ const openOrders = (state) => {
 
   return openOrders;
 };
+
+export const getProductNameById = (state, id) => {
+  console.log(state.exchange)
+
+  return id;
+}
 
 // ------------------------------------------------------------------------------
 // MY EVENTS
